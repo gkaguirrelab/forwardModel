@@ -1,11 +1,11 @@
-function [lb, ub] = bounds(obj)
+function setbounds(obj)
 % Returns bounds on the model parameters
 %
 % Syntax:
-%   [lb, ub] = obj.bounds()
+%   obj.setbounds()
 %
 % Description:
-%   Bounds for the deiveHRF model.
+%   Bounds for the deiveHRF model. 1 x nParams vectors.
 %
 % Inputs:
 %   none
@@ -14,7 +14,7 @@ function [lb, ub] = bounds(obj)
 %   none
 %
 % Outputs:
-%   lb, ub                - 1 x nParams vectors.
+%   none
 %
 
 
@@ -40,6 +40,10 @@ ub(3) = 2;              % beta1
 ub(4) = 25;             % alpha2
 ub(5) = 1.5;            % beta2
 ub(6) = Inf;            % gain (amplitude) of response
+
+% Store the bounds
+obj.lb = lb;
+obj.ub = ub;
 
 end
 

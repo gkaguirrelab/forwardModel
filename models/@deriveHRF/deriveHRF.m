@@ -62,6 +62,10 @@ classdef deriveHRF < handle
         % HRF duration to model in seconds
         duration
         
+        % The lower and upper bounds for the model
+        lb
+        ub
+
         % Verbosity
         verbose
     end
@@ -111,6 +115,9 @@ classdef deriveHRF < handle
             obj.duration = p.Results.duration;
             obj.verbose = p.Results.verbose;
             
+            % Set the bounds
+            obj.setbounds;
+
             % Create and cache the projection matrix
             obj.genprojection;
                         
@@ -126,7 +133,7 @@ classdef deriveHRF < handle
         rawData = prep(obj,rawData)
         genprojection(obj)
         x0 = initial(obj)
-        [lb, ub] = bounds(obj)
+        setbounds(obj)
         signal = clean(obj, signal)
         [fit, hrf] = forward(obj, pp)
         metric = metric(obj, signal, x)
