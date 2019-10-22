@@ -54,8 +54,9 @@ p.addParameter('verbose',true,@islogical);
 
 % parse
 p.parse(stimulus,data,tr, varargin{:})
-verbose = p.Results.verbose;
 
+verbose = p.Results.verbose;
+silenceWarnings = p.Results.silenceWarnings;
 
 %% Alert the user
 if verbose
@@ -128,16 +129,19 @@ if verbose
     fprintf('.\n');
 end
 
-% Silence warnings if so instructed
-if p.Results.silenceWarnings
-    warningState = warning;
-    warning('off','MATLAB:singularMatrix');
-    warning('off','MATLAB:nearlySingularMatrix');
-    warning('off','MATLAB:illConditionedMatrix');
-end
+% Store the warning state
+warningState = warning;
 
 % Loop through the voxels/vertices in vxs
 parfor ii=1:length(vxs)
+    
+    % Silence warnings if so instructed. This must be done inside the
+    % parloop to apply to each worker.
+    if silenceWarnings
+        warning('off','MATLAB:singularMatrix');
+        warning('off','MATLAB:nearlySingularMatrix');
+        warning('off','MATLAB:illConditionedMatrix');
+    end
 
     % Update progress bar
     if verbose && mod(ii,round(length(vxs)/50))==0
@@ -198,10 +202,10 @@ if verbose
     fprintf('\n');
 end
 
-% Restore the warning state
-if p.Results.silenceWarnings
-    warning(warningState);
-end
+% Restore the warning state. It shouldn't be changed up here at the main
+% execution level since warnings were silenced withihn the worker pool, but
+% restoring here to be safe.
+warning(warningState);
 
 % Map the par variables into full variables
 params = nan(totalVxs,model.nParams);
