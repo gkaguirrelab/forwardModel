@@ -55,7 +55,7 @@ obj.ub = ub;
 
 % Store the minParamDelta for the model
 paramResolution = nan(1,nParams);
-paramResolution(1,:) = [0.1 .1 .1 realmin realmin realmin];
+paramResolution(1,:) = [0.5 .5 .1 realmin realmin realmin];
 obj.paramResolution = paramResolution;
 
 end

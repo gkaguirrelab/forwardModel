@@ -160,7 +160,7 @@ parfor ii=1:length(vxs)
             myObj = @(x) norm(datats - model.forward(xSort{bb}([x x0(fixSet)])));
             x = fmincon(myObj,x0(floatSet),[],[],[],[], ...
                 lb(floatSet),ub(floatSet), ...
-                [],options);
+                model.nonlcon, options);
             
             % Update the x0 guess with the searched params
             x0(model.floatSet{bb}) = x;

@@ -1,8 +1,8 @@
-function [fit, hrf] = forward(obj, pp)
+function [fit, hrf] = forward(obj, x)
 % Forward model for the derive hrf search
 %
 % Syntax:
-%   fit = obj.forward(pp)
+%   fit = obj.forward(x)
 %
 % Description:
 %   Returns a time-series vector that is a square-wave vector of neural
@@ -16,7 +16,7 @@ function [fit, hrf] = forward(obj, pp)
 %       Metabolism 34.2 (2014): 316-324.
 %
 % Inputs:
-%   pp                    - [1 nParams] vector.
+%   x                     - [1 nParams] vector.
 %
 % Optional key/value pairs:
 %   none
@@ -34,14 +34,14 @@ tr = obj.tr;
 duration = obj.duration;
 
 % THe neural signal is the stimulus, scaled by the gain.
-neuralSignal =  pp(6) * stimulus;
+neuralSignal =  x(6) * stimulus;
 
 % Define the timebase in TRs
 timebase = 0:tr:ceil(duration/tr);
 
 % Create the double gamma function
-hrf = ((timebase.^(pp(2)-1) .* (pp(3).^pp(2)) .* exp(-pp(3).*timebase) ) ./ gamma(pp(2)));
-hrf = hrf + pp(1) .* ((timebase.^(pp(4)-1) .* (pp(5).^pp(4)) .* exp(-pp(5).*timebase) ) ./ gamma(pp(4)));
+hrf = ((timebase.^(x(2)-1) .* (x(3).^x(2)) .* exp(-x(3).*timebase) ) ./ gamma(x(2)));
+hrf = hrf + x(1) .* ((timebase.^(x(4)-1) .* (x(5).^x(4)) .* exp(-x(5).*timebase) ) ./ gamma(x(4)));
 
 % Set to zero at onset
 hrf = hrf - hrf(1);

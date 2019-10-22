@@ -44,8 +44,8 @@ classdef pRF_timeShift < handle
         % The projection matrix used to regress our nuisance effects
         T
         
-        % The last calculation of the gaussVector.
-        gaussVectorLast
+        % The last calculation of the gaussStim.
+        gaussStimLast
         
         % The last set of params
         ppLast
@@ -178,7 +178,7 @@ classdef pRF_timeShift < handle
             obj.ppLast = obj.initial*1.01;
 
             % Call the forward model with initial params, thus forcing the
-            % gaussvector to be created and stored
+            % gaussStim to be created and stored
             obj.forward(obj.initial);
             
             % Create and cache the hrf
@@ -209,7 +209,8 @@ classdef pRF_timeShift < handle
         x0 = initial(obj)
         setbounds(obj)
         signal = clean(obj, signal)
-        fit = forward(obj, params)
+        [c, ceq] = nonlcon(obj, x)
+        fit = forward(obj, x)
         metric = metric(obj, signal, x)
         seeds = seeds(obj, data, vxs)
         results = results(obj, params, metric)

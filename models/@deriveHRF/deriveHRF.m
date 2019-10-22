@@ -135,7 +135,8 @@ classdef deriveHRF < handle
         x0 = initial(obj)
         setbounds(obj)
         signal = clean(obj, signal)
-        [fit, hrf] = forward(obj, pp)
+        [c, ceq] = nonlcon(obj, x);
+        [fit, hrf] = forward(obj, x)
         metric = metric(obj, signal, x)
         seeds = seeds(obj, data, vxs)
         results = results(obj, params, metric)
