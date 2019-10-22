@@ -49,6 +49,7 @@ p.addParameter('modelOpts',{'typicalGain',30},@iscell);
 p.addParameter('modelPayload',{},@iscell);
 p.addParameter('vxs',[],@isvector);
 p.addParameter('maxIter',500,@isscalar);
+p.addParameter('silenceWarnings',true,@islogical);
 p.addParameter('verbose',true,@islogical);
 
 % parse
@@ -100,17 +101,20 @@ seeds = model.seeds(data,vxs);
 
 
 %% Fit the data
-% Options for fmincon
-options = optimset('Display','off', ...
-    'MaxFunEvals',Inf,'MaxIter',p.Results.maxIter, ...
-    'TolFun',1e-6,'TolX',1e-6);
+
+% Basic options for fmincon
+basicOptions = optimoptions('fmincon','Display','off');
 
 % Pre-compute functions that will asemble the parameters in the different
-% model stages
+% model stages, and create different option sets
 for bb = 1:model.nStages
 	order = [model.floatSet{bb} model.fixSet{bb}];
 	[~,sortOrder]=sort(order);
 	xSort{bb} = @(x) x(sortOrder);
+    stageOptions = basicOptions;
+    stageOptions.FiniteDifferenceStepSize = ...
+        model.FiniteDifferenceStepSize(model.floatSet{bb});
+    options{bb} = stageOptions;
 end
 
 % Obtain the model bounds
@@ -122,6 +126,14 @@ if verbose
     fprintf(['Fitting non-linear model over ' num2str(length(vxs)) ' vertices:\n']);
     fprintf('| 0                      50                   100%% |\n');
     fprintf('.\n');
+end
+
+% Silence warnings if so instructed
+if p.Results.silenceWarnings
+    warningState = warning;
+    warning('off','MATLAB:singularMatrix');
+    warning('off','MATLAB:nearlySingularMatrix');
+    warning('off','MATLAB:illConditionedMatrix');
 end
 
 % Loop through the voxels/vertices in vxs
@@ -160,7 +172,7 @@ parfor ii=1:length(vxs)
             myObj = @(x) norm(datats - model.forward(xSort{bb}([x x0(fixSet)])));
             x = fmincon(myObj,x0(floatSet),[],[],[],[], ...
                 lb(floatSet),ub(floatSet), ...
-                model.nonlcon, options);
+                model.nonlcon, options{bb});
             
             % Update the x0 guess with the searched params
             x0(model.floatSet{bb}) = x;
@@ -184,6 +196,11 @@ end
 if verbose
     toc
     fprintf('\n');
+end
+
+% Restore the warning state
+if p.Results.silenceWarnings
+    warning(warningState);
 end
 
 % Map the par variables into full variables

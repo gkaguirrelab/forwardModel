@@ -26,7 +26,7 @@ lb = nan(1,nParams);
 ub = nan(1,nParams);
 
 % The lower bounds
-lb(1) = -1;              % Aratio
+lb(1) = -1;             % Aratio
 lb(2) = 2;              % alpha1
 lb(3) = 0.5;            % beta1
 lb(4) = 6;              % alpha2
@@ -44,6 +44,13 @@ ub(6) = Inf;            % gain (amplitude) of response
 % Store the bounds
 obj.lb = lb;
 obj.ub = ub;
+
+% Store the FiniteDifferenceStepSize for the model. See here for more
+% details:
+%   https://www.mathworks.com/help/optim/ug/optimization-options-reference.html
+FiniteDifferenceStepSize = sqrt(eps);
+obj.FiniteDifferenceStepSize = FiniteDifferenceStepSize;
+
 
 end
 

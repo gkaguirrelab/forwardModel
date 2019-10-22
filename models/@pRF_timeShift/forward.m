@@ -27,14 +27,23 @@ hrf = obj.hrf;
 tr = obj.tr;
 xx = obj.xx;
 yy = obj.yy;
-ppLast = obj.ppLast;
-paramResolution = obj.paramResolution;
+xLast = obj.xLast;
+FiniteDifferenceStepSize = obj.FiniteDifferenceStepSize;
 
 % Get the max stimulus dimension
 resmx=max(res);
 
-% Gaussian at [x, y] x(1), x(2), of sigma size x(3)
-if any(abs(ppLast(1:3)-x(1:3)) > paramResolution(1:3))
+% If the change in the params that define the Gaussian are sufficiently
+% similar to the last time the function was executed, load the cached
+% version of gaussStim instead of re-calculating it.
+if all(abs(xLast(1:3)-x(1:3)) < FiniteDifferenceStepSize(1:3))
+    
+    % Use the last one
+    gaussStim = obj.gaussStimLast;
+    
+else
+    
+    % Gaussian at [x, y] x(1), x(2), of sigma size x(3)
     gaussWindow = makegaussian2d(resmx,x(1),x(2),x(3),x(3),xx,yy,0,0);
     
     % Normalization scalar
@@ -48,9 +57,11 @@ if any(abs(ppLast(1:3)-x(1:3)) > paramResolution(1:3))
     
     % Store the gaussStim
     obj.gaussStimLast = gaussStim;
-else
-    gaussStim = obj.gaussStimLast;
+    
 end
+
+% Update xLast
+obj.xLast = x;
 
 % The gaussStim subjected to a compressive non-linearity by raising to the
 % x(5) exponent and then scaled by the gain parameter.
@@ -66,7 +77,6 @@ fit = conv2run(neuralSignal,hrf,acqGroups);
 % Partial the data to remove the effects that are represented in the
 % regression matrix T
 fit = obj.T*fit;
-
 
 end
 

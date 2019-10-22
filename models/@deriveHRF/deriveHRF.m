@@ -66,6 +66,13 @@ classdef deriveHRF < handle
         lb
         ub
 
+        % A vector, equal in length to the number of parameters, (or a
+        % single scalar value) that specifies the smallest step size that
+        % fmincon will take for each parameter. This value is defined in
+        % obj.setbounds.
+        FiniteDifferenceStepSize
+        
+        
         % Verbosity
         verbose
     end

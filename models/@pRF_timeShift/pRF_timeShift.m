@@ -48,7 +48,7 @@ classdef pRF_timeShift < handle
         gaussStimLast
         
         % The last set of params
-        ppLast
+        xLast
     end
     
     % Fixed after object creation
@@ -98,10 +98,12 @@ classdef pRF_timeShift < handle
         lb
         ub
         
-        % As compared to the last call of obj.forward, a change in a
-        % parameter value greater than is specified in this vector leads to
-        % a recalculation of the gaussvector.
-        paramResolution
+        % A vector, equal in length to the number of parameters, that
+        % specifies the smallest step size that fmincon will take for each
+        % parameter. This threshold is also used to determine if, in a call
+        % to obj.forward, the gaussvector needs to be re-calculated, or if
+        % the prior value can be used.
+        FiniteDifferenceStepSize
                 
         % Verbosity
         verbose
@@ -173,9 +175,9 @@ classdef pRF_timeShift < handle
             % Set the bounds and minParamDelta
             obj.setbounds;
             
-            % Initialize ppLast with values slightly different from the
+            % Initialize xLast with values slightly different from the
             % initial
-            obj.ppLast = obj.initial*1.01;
+            obj.xLast = obj.initial*1.01;
 
             % Call the forward model with initial params, thus forcing the
             % gaussStim to be created and stored
