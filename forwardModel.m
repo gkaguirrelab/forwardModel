@@ -1,8 +1,8 @@
-function results = analyzePRF(stimulus,data,tr,varargin)
+function results = forwardModel(stimulus,data,tr,varargin)
 % Non-linear model fitting of fMRI time-series data
 %
 % Syntax:
-%  results = analyzePRF(stimulus,data)
+%  results = forwardModel(stimulus,data,tr)
 %
 % Description:
 %   Lorem ipsum
