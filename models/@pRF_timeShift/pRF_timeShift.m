@@ -43,6 +43,12 @@ classdef pRF_timeShift < handle
         
         % The projection matrix used to regress our nuisance effects
         T
+        
+        % The last calculation of the gaussVector.
+        gaussVectorLast
+        
+        % The last set of params
+        ppLast
     end
     
     % Fixed after object creation
@@ -70,6 +76,7 @@ classdef pRF_timeShift < handle
         
         % A vector with the number of TRs in each acquisition.
         nTRsPerAcq
+        
     end
     
     % These may be modified after object creation
@@ -87,9 +94,24 @@ classdef pRF_timeShift < handle
         % The size of sigma produced for initial params
         seedScale
         
+        % The lower and upper bounds for the model
+        lb
+        ub
+        
+        % As compared to the last call of obj.forward, a change in a
+        % parameter value greater than is specified in this vector leads to
+        % a recalculation of the gaussvector.
+        paramResolution
+                
         % Verbosity
         verbose
+        
+        % The number of pixels in the stimulus specification per degree of
+        % visual angle
         pixelsPerDegree
+        
+        % The magnification (or minification) of the screen caused by
+        % artificial lenses.
         screenMagnification
     end
     
@@ -148,6 +170,17 @@ classdef pRF_timeShift < handle
             obj.pixelsPerDegree = p.Results.pixelsPerDegree;
             obj.screenMagnification = p.Results.screenMagnification;
 
+            % Set the bounds and minParamDelta
+            obj.setbounds;
+            
+            % Initialize ppLast with values slightly different from the
+            % initial
+            obj.ppLast = obj.initial*1.01;
+
+            % Call the forward model with initial params, thus forcing the
+            % gaussvector to be created and stored
+            obj.forward(obj.initial);
+            
             % Create and cache the hrf
             obj.genhrf
             
@@ -174,7 +207,7 @@ classdef pRF_timeShift < handle
         rawData = prep(obj,rawData)
         genprojection(obj)
         x0 = initial(obj)
-        [lb, ub] = bounds(obj)
+        setbounds(obj)
         signal = clean(obj, signal)
         fit = forward(obj, params)
         metric = metric(obj, signal, x)

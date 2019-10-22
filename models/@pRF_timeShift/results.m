@@ -66,7 +66,9 @@ end
 results.params =   params;
 
 % Identify the color scale to be used for plotting the different components
-[lb, ub] = obj.bounds;
+lb = obj.lb;
+ub = obj.ub;
+
 results.meta.mapField = {'cartX','cartY','angle','eccen','sigma','gain','expt','hrfshift','R2'};
 results.meta.mapScale = {'blueRed','blueRed','angle','eccen','logJet','linearJet','linearJet','blueRed','grayRed'};
 results.meta.mapLabel = {'Horizontal [deg]','Vertical [deg]','Polar angle [deg]','Eccentricity [deg]',...

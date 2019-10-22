@@ -1,8 +1,8 @@
-function [lb, ub] = bounds(obj)
-% Returns bounds on the model parameters
+function setbounds(obj)
+% Sets the bounds on the model parameters
 %
 % Syntax:
-%   [lb, ub] = obj.bounds()
+%   obj.setbounds()
 %
 % Description:
 %   Bounds for the prf_timeShift model. Rationale is as follows:
@@ -12,6 +12,8 @@ function [lb, ub] = bounds(obj)
 %       exp  :  Locked to 0.05, following Benson et al, 2018, HCP 7T data
 %       shift:  HRF temporal shift +- 3 seconds.       
 %
+%   These are specified as 1 x nParams vectors.
+%
 % Inputs:
 %   none
 %
@@ -19,7 +21,7 @@ function [lb, ub] = bounds(obj)
 %   none
 %
 % Outputs:
-%   lb, ub                - 1 x nParams vectors.
+%   none
 %
 
 
@@ -46,6 +48,15 @@ ub(3) = max(res)/2;     % sigma
 ub(4) = 1000;           % gain (amplitude) of response
 ub(5) = 0.05;           % compressive exponent
 ub(6) = 3;              % HRF temporal shift (seconds)
+
+% Store the bounds in the object
+obj.lb = lb;
+obj.ub = ub;
+
+% Store the minParamDelta for the model
+paramResolution = nan(1,nParams);
+paramResolution(1,:) = [0.1 .1 .1 realmin realmin realmin];
+obj.paramResolution = paramResolution;
 
 end
 

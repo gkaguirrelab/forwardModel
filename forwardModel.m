@@ -114,7 +114,7 @@ for bb = 1:model.nStages
 end
 
 % Obtain the model bounds
-[lb, ub] = model.bounds;
+lb = model.lb; ub = model.ub;
 
 % Alert the user
 if verbose
@@ -161,6 +161,7 @@ parfor ii=1:length(vxs)
             x = fmincon(myObj,x0(floatSet),[],[],[],[], ...
                 lb(floatSet),ub(floatSet), ...
                 [],options);
+            
             % Update the x0 guess with the searched params
             x0(model.floatSet{bb}) = x;
         end
