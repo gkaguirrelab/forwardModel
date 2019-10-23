@@ -74,9 +74,8 @@ hrf = fshift(hrf,x(6)/tr);
 % betwen the acquisitions
 fit = conv2run(neuralSignal,hrf,acqGroups);
 
-% Partial the data to remove the effects that are represented in the
-% regression matrix T
-fit = obj.T*fit;
+% Apply the cleaning step
+fit = obj.clean(fit);
 
 end
 
