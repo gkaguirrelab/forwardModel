@@ -57,7 +57,7 @@ obj.ub = ub;
 % details:
 %   https://www.mathworks.com/help/optim/ug/optimization-options-reference.html
 FiniteDifferenceStepSize = nan(1,nParams);
-FiniteDifferenceStepSize(1,:) = [0.1 .1 .05 sqrt(eps) sqrt(eps) sqrt(eps)];
+FiniteDifferenceStepSize(1,:) = [0.01 .01 .01 sqrt(eps) sqrt(eps) sqrt(eps)];
 obj.FiniteDifferenceStepSize = FiniteDifferenceStepSize;
 
 end
