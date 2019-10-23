@@ -1,4 +1,4 @@
-classdef deriveHRF < handle
+classdef demo < handle
     
     properties (Constant)
         
@@ -7,21 +7,21 @@ classdef deriveHRF < handle
         dimtime = 2;
         
         % THe number of parameters in the model
-        nParams = 4;
+        nParams = 3;
         
-        % The model is executed as a single stage search.
-        nStages = 1;
-        floatSet = {[1 2 3 4 5 6]};
-        fixSet = {[]};
+        % The model is executed as a two-stage search.
+        nStages = 2;
+        floatSet = {[1 2],[1 2 3]};
+        fixSet = {[1],[]};
         
         % A description of the model
         description = ...
-            ['The deriveHRF model'];
+            ['The demo model'];
     end
     
     % Private properties
     properties (GetAccess=private)
-        % The projection matrix used to regress our nuisance effects
+        % The projection matrix used to regress out nuisance effects
         T
     end
     
@@ -58,10 +58,7 @@ classdef deriveHRF < handle
         
         % Typical amplitude of the BOLD fMRI response in the data
         typicalGain
-        
-        % HRF duration to model in seconds
-        duration
-        
+                
         % The lower and upper bounds for the model
         lb
         ub
@@ -70,8 +67,7 @@ classdef deriveHRF < handle
         % single scalar value) that specifies the smallest step size that
         % fmincon will take for each parameter. This value is defined in
         % obj.setbounds.
-        FiniteDifferenceStepSize
-        
+        FiniteDifferenceStepSize        
         
         % Verbosity
         verbose
@@ -80,7 +76,7 @@ classdef deriveHRF < handle
     methods
 
         % Constructor
-        function obj = deriveHRF(data,stimulus,tr,varargin)
+        function obj = demo(data,stimulus,tr,varargin)
                         
             % instantiate input parser
             p = inputParser; p.KeepUnmatched = false;
@@ -93,7 +89,6 @@ classdef deriveHRF < handle
             p.addParameter('payload',{},@iscell);
             p.addParameter('polyDeg',[],@isscalar);
             p.addParameter('typicalGain',300,@isscalar);
-            p.addParameter('duration',50,@isscalar);
             p.addParameter('verbose',true,@islogical);
 
             % parse
@@ -119,7 +114,6 @@ classdef deriveHRF < handle
             obj.payload = p.Results.payload;
             obj.polyDeg = p.Results.polyDeg;
             obj.typicalGain = p.Results.typicalGain;
-            obj.duration = p.Results.duration;
             obj.verbose = p.Results.verbose;
             
             % Set the bounds

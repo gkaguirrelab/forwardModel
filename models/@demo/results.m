@@ -25,11 +25,10 @@ function results = results(obj, params, metric)
 
 
 % Map params and metric to a results structure
-results.gamma1 =        posrect(params(:,1));
-results.gamma2 =        posrect(params(:,1)) .* posrect(params(:,2));
-results.gammaScale =    posrect(params(:,3));
-results.gain =          posrect(params(:,4));
-results.R2 =            metric;
+results.gain =            params(:,1);
+results.exponent =        params(:,2);
+results.shift =           params(:,3);
+results.R2 =              metric;
 
 % Add the params themselves
 results.params =        params;
@@ -37,10 +36,10 @@ results.params =        params;
 % Identify the color scale to be used for plotting the different components
 % Identify the color scale to be used for plotting the different components
 lb = obj.lb; ub = obj.ub;
-results.meta.mapField = {'gamma1','gamma2','gammaScale','gain','R2'};
-results.meta.mapScale = {'linearJet','linearJet','linearJet','gain','R2'};
-results.meta.mapLabel = {'gamma1 [secs]','gamma2 [secs]','Relative peak to undershoot','response gain [T2* units]','R2'};
-results.meta.mapBounds = {[lb(1) ub(1)],[lb(2) ub(2)],[lb(3) ub(3)],[0 1000],[0 1]};
+results.meta.mapField = {'gain','exponent','shift','R2'};
+results.meta.mapScale = {'linearJet','logJet','grayRed'};
+results.meta.mapLabel = {'gain [au]','exponent [au]','shift [au]','R2'};
+results.meta.mapBounds = {[lb(1) ub(1)],[lb(2) ub(2)],[lb(3) ub(3)],[0 1]};
 
 
 end
