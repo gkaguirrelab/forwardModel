@@ -1,4 +1,4 @@
-classdef demo < handle
+classdef example < handle
     
     properties (Constant)
         
@@ -16,7 +16,7 @@ classdef demo < handle
         
         % A description of the model
         description = ...
-            ['The demo model'];
+            ['The example model'];
     end
     
     % Private properties
@@ -76,7 +76,7 @@ classdef demo < handle
     methods
 
         % Constructor
-        function obj = demo(data,stimulus,tr,varargin)
+        function obj = example(data,stimulus,tr,varargin)
                         
             % instantiate input parser
             p = inputParser; p.KeepUnmatched = false;
