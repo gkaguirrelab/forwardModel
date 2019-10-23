@@ -26,12 +26,9 @@ typicalGain = obj.typicalGain;
 x0 = zeros(1,nParams);
 
 % Assemble X0
-x0(1) = 6;               % Aratio
-x0(2) = 7;               % alpha1 
-x0(3) = 1;               % beta1
-x0(4) = 16;              % alpha2
-x0(5) = 1;               % beta2
-x0(6) = typicalGain;     % typical gain (amplitude)
+x0(1) = typicalGain;     % Gain
+x0(2) = 2;               % exponent 
+x0(3) = 0;               % shift
 
 end
 
