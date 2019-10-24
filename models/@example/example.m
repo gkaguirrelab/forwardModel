@@ -87,7 +87,7 @@ classdef example < handle
             p.addRequired('tr',@isscalar);
             
             p.addParameter('payload',{},@iscell);
-            p.addParameter('polyDeg',[],@isscalar);
+            p.addParameter('polyDeg',[],@isnumeric);
             p.addParameter('typicalGain',300,@isscalar);
             p.addParameter('verbose',true,@islogical);
 

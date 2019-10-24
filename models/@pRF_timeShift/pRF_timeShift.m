@@ -132,7 +132,7 @@ classdef pRF_timeShift < handle
             
             p.addParameter('payload',{},@iscell);
             p.addParameter('hrfParams',[4 10 7 20],@isvector);
-            p.addParameter('polyDeg',[],@isscalar);
+            p.addParameter('polyDeg',[],@isnumeric);
             p.addParameter('typicalGain',30,@isscalar);
             p.addParameter('seedScale','medium',@ischar);
             p.addParameter('verbose',true,@islogical);
