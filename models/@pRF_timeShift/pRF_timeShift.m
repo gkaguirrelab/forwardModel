@@ -120,14 +120,14 @@ classdef pRF_timeShift < handle
     methods
 
         % Constructor
-        function obj = pRF_timeShift(data,stimulus,tr,varargin)
+        function obj = pRF_timeShift(stimulus,data,tr,varargin)
                         
             % instantiate input parser
             p = inputParser; p.KeepUnmatched = false;
             
             % Required
-            p.addRequired('data',@iscell);
             p.addRequired('stimulus',@iscell);
+            p.addRequired('data',@iscell);
             p.addRequired('tr',@isscalar);
             
             p.addParameter('payload',{},@iscell);
@@ -140,7 +140,7 @@ classdef pRF_timeShift < handle
             p.addParameter('screenMagnification',1,@isscalar);
         
             % parse
-            p.parse(data, stimulus, tr, varargin{:})
+            p.parse(stimulus, data, tr, varargin{:})
             
             % Derive properties from the data variable and then clear
             obj.nAcqs = length(data);

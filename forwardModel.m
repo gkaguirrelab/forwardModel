@@ -34,6 +34,33 @@ function results = forwardModel(stimulus,data,tr,varargin)
 % Outputs:
 %   results               - Structure
 %
+% Examples:
+%{
+    % Create a stimulus
+    stimulus = [];
+    stimulus{1}(1,1,:) = repmat([zeros(1,12) ones(1,12)],1,8);
+
+    % Instantiate the "example" model
+    tr = 1;
+    dummyData = [];
+    dummyData{1}(1,:) = zeros(1,size(stimulus{1},3));
+    model = example(stimulus,dummyData,tr);
+
+    % Create simulated data with the default params, and add some noise
+    datats = model.forward(model.initial);
+    datats = datats + randn(size(datats))*25;
+    data = []
+    data{1}(1,:) = datats;
+
+    % Call the forwardModel
+    results = forwardModel(stimulus,data,tr,'modelClass','example');
+
+    % Plot the data and the fit
+    figure
+    plot(datats);
+    hold on
+    plot(model.forward(results.params));
+%}
 
 
 %% input parser
@@ -87,7 +114,7 @@ end
 
 %% Set up model
 % Create the model object
-model = feval(p.Results.modelClass,data,stimulus,p.Results.tr,...
+model = feval(p.Results.modelClass,stimulus,data,p.Results.tr,...
     'payload',p.Results.modelPayload, ...
     p.Results.modelOpts{:});
 

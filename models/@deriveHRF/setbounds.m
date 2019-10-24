@@ -48,7 +48,8 @@ obj.ub = ub;
 % Store the FiniteDifferenceStepSize for the model. See here for more
 % details:
 %   https://www.mathworks.com/help/optim/ug/optimization-options-reference.html
-FiniteDifferenceStepSize = sqrt(eps);
+FiniteDifferenceStepSize = nan(1,nParams);
+FiniteDifferenceStepSize(1,:) = sqrt(eps);
 obj.FiniteDifferenceStepSize = FiniteDifferenceStepSize;
 
 

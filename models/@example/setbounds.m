@@ -26,12 +26,12 @@ lb = nan(1,nParams);
 ub = nan(1,nParams);
 
 % The lower bounds
-lb(1) = -10;            % gain
+lb(1) = -Inf;            % gain
 lb(2) = 1;              % exponent
 lb(3) = 0;              % additive shift
 
 % The upper bounds
-ub(1) = 10;             % gain
+ub(1) = Inf;             % gain
 ub(2) = 3;              % exponent
 ub(3) = 1000;           % additive shift
 
@@ -45,7 +45,8 @@ obj.ub = ub;
 % the "step size" for each parameter during the search. See here for more
 % details:
 %   https://www.mathworks.com/help/optim/ug/optimization-options-reference.html
-FiniteDifferenceStepSize = sqrt(eps);
+FiniteDifferenceStepSize = nan(1,nParams);
+FiniteDifferenceStepSize(1,:) = sqrt(eps);
 obj.FiniteDifferenceStepSize = FiniteDifferenceStepSize;
 
 
