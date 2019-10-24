@@ -80,14 +80,14 @@ classdef deriveHRF < handle
     methods
 
         % Constructor
-        function obj = deriveHRF(stimulus,data,tr,varargin)
+        function obj = deriveHRF(data,stimulus,tr,varargin)
                         
             % instantiate input parser
             p = inputParser; p.KeepUnmatched = false;
             
             % Required
-            p.addRequired('stimulus',@iscell);
             p.addRequired('data',@iscell);
+            p.addRequired('stimulus',@iscell);
             p.addRequired('tr',@isscalar);
             
             p.addParameter('payload',{},@iscell);
@@ -97,7 +97,7 @@ classdef deriveHRF < handle
             p.addParameter('verbose',true,@islogical);
 
             % parse
-            p.parse(stimulus, data, tr, varargin{:})
+            p.parse(data,stimulus, tr, varargin{:})
             
             % Derive properties from the data variable and then clear
             obj.nAcqs = length(data);

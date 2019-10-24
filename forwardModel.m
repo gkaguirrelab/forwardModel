@@ -1,18 +1,18 @@
-function results = forwardModel(stimulus,data,tr,varargin)
+function results = forwardModel(data,stimulus,tr,varargin)
 % Non-linear model fitting of fMRI time-series data
 %
 % Syntax:
-%  results = forwardModel(stimulus,data,tr)
+%  results = forwardModel(data,stimulus,tr)
 %
 % Description:
 %   Lorem ipsum
 %
 % Inputs:
-%   stimulus              - A matrix [x y t] or cell array of such
-%                           matrices. 
 %   data                  - A matrix [v t] or cell array of such
 %                           matricies. The fMRI time-series data across t
 %                           TRs, for v vertices / voxels.
+%   stimulus              - A matrix [x y t] or cell array of such
+%                           matrices. 
 %   tr                    - Scalar. The TR of the fMRI data in seconds.
 %
 % Optional key/value pairs:
@@ -44,7 +44,7 @@ function results = forwardModel(stimulus,data,tr,varargin)
     tr = 1;
     dummyData = [];
     dummyData{1}(1,:) = zeros(1,size(stimulus{1},3));
-    model = example(stimulus,dummyData,tr);
+    model = example(dummyData,stimulus,tr);
 
     % Create simulated data with the default params, and add some noise
     datats = model.forward(model.initial);
@@ -53,7 +53,7 @@ function results = forwardModel(stimulus,data,tr,varargin)
     data{1}(1,:) = datats;
 
     % Call the forwardModel
-    results = forwardModel(stimulus,data,tr,'modelClass','example');
+    results = forwardModel(data,stimulus,tr,'modelClass','example');
 
     % Plot the data and the fit
     figure
@@ -67,8 +67,8 @@ function results = forwardModel(stimulus,data,tr,varargin)
 p = inputParser; p.KeepUnmatched = false;
 
 % Required
-p.addRequired('stimulus',@(x)(iscell(x) || ismatrix(x)));
 p.addRequired('data',@(x)(iscell(x) || ismatrix(x)));
+p.addRequired('stimulus',@(x)(iscell(x) || ismatrix(x)));
 p.addRequired('tr',@isscalar);
 
 p.addParameter('modelClass','pRF_timeShift',@ischar);
@@ -80,7 +80,7 @@ p.addParameter('silenceWarnings',true,@islogical);
 p.addParameter('verbose',true,@islogical);
 
 % parse
-p.parse(stimulus,data,tr, varargin{:})
+p.parse(data,stimulus,tr, varargin{:})
 
 verbose = p.Results.verbose;
 silenceWarnings = p.Results.silenceWarnings;
@@ -92,12 +92,12 @@ end
 
 
 %% Massage inputs and set constants
-% Place the stimulus and data in a cell if not already so
-if ~iscell(stimulus)
-    stimulus = {stimulus};
-end
+% Place the data and stimulus in a cell if not already so
 if ~iscell(data)
     data = {data};
+end
+if ~iscell(stimulus)
+    stimulus = {stimulus};
 end
 
 % Identify the row and columns of the data matrix
@@ -114,7 +114,7 @@ end
 
 %% Set up model
 % Create the model object
-model = feval(p.Results.modelClass,stimulus,data,p.Results.tr,...
+model = feval(p.Results.modelClass,data,stimulus,p.Results.tr,...
     'payload',p.Results.modelPayload, ...
     p.Results.modelOpts{:});
 
