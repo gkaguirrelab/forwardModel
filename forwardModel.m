@@ -172,7 +172,12 @@ parfor ii=1:length(vxs)
 
     % Update progress bar
     if verbose && mod(ii,round(length(vxs)/50))==0
-        fprintf('\b.\n');
+        if ismac
+            fprintf('\b.\n');
+        end
+        if isunix
+            fprintf('.');
+        end
     end
 
     % Squeeze the data from a cell array into a single concatenated time

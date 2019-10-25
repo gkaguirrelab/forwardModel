@@ -111,7 +111,12 @@ parfor ii = 1:size(allseeds,1)
 
     % Update progress bar
     if verbose && mod(ii,round(size(allseeds,1)/50))==0
-        fprintf('\b.\n');
+        if ismac
+            fprintf('\b.\n');
+        end
+        if isunix
+            fprintf('.');
+        end
     end
 
     % Evaluate the forward model
