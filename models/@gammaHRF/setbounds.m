@@ -31,7 +31,7 @@ ub = nan(1,nParams);
 lb(1) = 3;              % gamma1 (seconds)
 lb(2) = 8;              % gamma2 (seconds)
 lb(3) = 2;              % gammaScale
-lb(4) = 0;              % gain (amplitude) of response
+lb(4) = -Inf;              % gain (amplitude) of response
 lb(5) = 16;             % duration (seconds)
 
 % The upper bounds

@@ -1,4 +1,4 @@
-function fit = forward(obj, x)
+function [fit, hrf] = forward(obj, x)
 % Forward model for the pRF search
 %
 % Syntax:
