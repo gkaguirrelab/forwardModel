@@ -255,7 +255,7 @@ end
 warningState = warning;
 
 % Loop through the voxels/vertices in vxs
-for ii=1:length(vxs)
+parfor ii=1:length(vxs)
     
     % Silence warnings if so instructed. This must be done inside the
     % par loop to apply to each worker.
@@ -351,6 +351,9 @@ results = model.results(params, metric);
 % Add the model information
 results.model.class = p.Results.modelClass;
 results.model.inputs = {stimulus, p.Results.tr};
+if isempty(stimTime)
+    stimTime = {stimTime};
+end
 results.model.opts =  [p.Results.modelOpts 'stimTime' stimTime];
 results.model.payload =  p.Results.modelPayload;
 

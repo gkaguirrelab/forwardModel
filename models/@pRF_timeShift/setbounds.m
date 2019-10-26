@@ -36,7 +36,7 @@ ub = nan(1,nParams);
 % The lower bounds
 lb(1) = -res(1)/4;      % xPosition
 lb(2) = -res(2)/4;      % yPosition
-lb(3) = .25;              % sigma (pixels)
+lb(3) = .25;            % sigma (pixels)
 lb(4) = 0;              % gain (amplitude) of response
 lb(5) = 0.05;           % compressive exponent
 lb(6) = -3;             % HRF temporal shift (seconds)
@@ -45,7 +45,7 @@ lb(6) = -3;             % HRF temporal shift (seconds)
 ub(1) = 1.25*res(1);    % xPosition
 ub(2) = 1.25*res(2);    % yPosition
 ub(3) = max(res)/2;     % sigma
-ub(4) = Inf;           % gain (amplitude) of response
+ub(4) = Inf;            % gain (amplitude) of response
 ub(5) = 0.05;           % compressive exponent
 ub(6) = 3;              % HRF temporal shift (seconds)
 
