@@ -41,15 +41,18 @@ end
 % Construct an HRF
 gamma1 = x(1);
 gamma2 = x(2);
-gammaScale = x(3);
+undershootGain = x(3);
 duration = x(5);
 
 % Define a timebase at the data resolution
 timebase = 0:dataDeltaT:duration;
 
 % Create the double gamma function
-hrf = gampdf(timebase,gamma1, 1) - ...
-    gampdf(timebase, gamma2, 1)/gammaScale;
+g1 = gampdf(timebase,gamma1, 1);
+g1 = g1./ max(g1);
+g2 = gampdf(timebase, gamma2, 1);
+g2 = (g2/ max(g2)) * undershootGain;
+hrf = g1 - g2;
 
 % Set to zero at onset
 hrf = hrf - hrf(1);

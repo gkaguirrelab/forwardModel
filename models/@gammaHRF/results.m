@@ -27,7 +27,7 @@ function results = results(obj, params, metric)
 % Map params and metric to a results structure
 results.gamma1 =        params(:,1);
 results.gamma2 =        params(:,2);
-results.gammaScale =    params(:,3);
+results.undershootGain = params(:,3);
 results.gain =          params(:,4);
 results.R2 =            metric;
 
@@ -37,9 +37,9 @@ results.params =        params;
 % Identify the color scale to be used for plotting the different components
 % Identify the color scale to be used for plotting the different components
 lb = obj.lb; ub = obj.ub;
-results.meta.mapField = {'gamma1','gamma2','gammaScale','gain','R2'};
-results.meta.mapScale = {'linearJet','linearJet','linearJet','blueRed','grayRed'};
-results.meta.mapLabel = {'gamma1 [secs]','gamma2 [secs]','Relative peak to undershoot','response gain [T2* units]','R2'};
+results.meta.mapField = {'gamma1','gamma2','undershootGain','gain','R2'};
+results.meta.mapScale = {'linearJet','linearJet','grayRed','blueRed','grayRed'};
+results.meta.mapLabel = {'gamma1 [secs]','gamma2 [secs]','Relative undershoot','response gain [T2* units]','R2'};
 results.meta.mapBounds = {[lb(1) ub(1)],[lb(2) ub(2)],[lb(3) ub(3)],[-obj.typicalGain*2 obj.typicalGain*2],[0 1]};
 
 
