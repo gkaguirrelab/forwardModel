@@ -6,12 +6,12 @@ function [c, ceq] = nonlcon(obj, x)
 %
 % Description:
 %   Returns the inequality and equality constraints of the forward model at
-%   pp. The fmincon optimization will attempt to achieve:
+%   x. The fmincon optimization will attempt to achieve:
 %       c(x)  <= 0
 %       ceq(x) = 0
 %
 % Inputs:
-%   x                     - 1xnParams vector.
+%   pp                    - 1xnParams vector.
 %
 % Optional key/value pairs:
 %   none

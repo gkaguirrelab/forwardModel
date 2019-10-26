@@ -1,4 +1,4 @@
-classdef pRF_timeShift < handle
+classdef prfTimeShift < handle
     
     properties (Constant)
                 
@@ -133,7 +133,7 @@ classdef pRF_timeShift < handle
     methods
 
         % Constructor
-        function obj = pRF_timeShift(data,stimulus,tr,varargin)
+        function obj = prfTimeShift(data,stimulus,tr,varargin)
                         
             % instantiate input parser
             p = inputParser; p.KeepUnmatched = false;

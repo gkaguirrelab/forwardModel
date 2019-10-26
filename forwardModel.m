@@ -77,11 +77,11 @@ function results = forwardModel(data,stimulus,tr,varargin)
     stimulus = [];
     stimulus{1}(1,1,:) = repmat([zeros(1,12) ones(1,12)],1,8);
 
-    % Instantiate the "pRF_timeShift" model
+    % Instantiate the "prfTimeShift" model
     tr = 1;
     dummyData = [];
     dummyData{1}(1,:) = repmat([zeros(1,12) ones(1,12)],1,8);
-    model = pRF_timeShift(dummyData,stimulus,tr);
+    model = prfTimeShift(dummyData,stimulus,tr);
 
     % Create simulated data with the default params, and add some noise
     datats = model.forward(model.initial);
@@ -90,7 +90,7 @@ function results = forwardModel(data,stimulus,tr,varargin)
     data{1}(1,:) = datats;
 
     % Call the forwardModel
-    results = forwardModel(data,stimulus,tr,'modelClass','pRF_timeShift');
+    results = forwardModel(data,stimulus,tr,'modelClass','prfTimeShift');
 
     % Plot the data and the fit
     figure
@@ -217,6 +217,12 @@ seeds = model.seeds(data,vxs);
 
 %% Fit the data
 
+% Convert the data into a single, concatenated matrix of [totalVxs time]
+data = catcell(1,data);
+
+% Retain just the voxels to be processed
+data = data(vxs,:);
+
 % Basic options for fmincon
 basicOptions = optimoptions('fmincon','Display','off');
 
@@ -274,9 +280,9 @@ parfor ii=1:length(vxs)
         end
     end
     
-    % Squeeze the data from a cell array into a single concatenated time
-    % series for the selected voxel/vertex
-    datats = cell2mat(cellfun(@(x) x(vxs(ii),:),data,'UniformOutput',0))';
+    % Get the time series for the selected voxel/vertex, transpose to a
+    % column vector (time x 1);
+    datats = data(ii,:)';
     
     % Apply the model cleaning step, which may include regression of
     % nuisance components.

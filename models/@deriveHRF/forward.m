@@ -1,62 +1,71 @@
-function [fit, hrf] = forward(obj, x)
-% Forward model for the derive hrf search
+function fit = forward(obj, x)
+% Forward model for the pRF search
 %
 % Syntax:
 %   fit = obj.forward(x)
 %
 % Description:
-%   Returns a time-series vector that is a square-wave vector of neural
-%   activity as defined by the stimulus, subject to convolution by an HRF
-%   that is defined by the params.
-%
-%   The HRF is a 6-parameter, double gamma HRF, described as model "IV" in:
-%
-%       Shan, Zuyao Y., et al. "Modeling of the hemodynamic responses in
-%       block design fMRI studies." Journal of Cerebral Blood Flow &
-%       Metabolism 34.2 (2014): 316-324.
+%   Returns a time-series vector that is the predicted response based upon
+%   the stimulus and the parameters provided in x.
 %
 % Inputs:
-%   x                     - [1 nParams] vector.
+%   x                     - 1xnParams vector.
 %
 % Optional key/value pairs:
 %   none
 %
 % Outputs:
-%   fit                   - [nTRs 1] vector.
-%   hrf                   - [duration 1] vector.
+%   fit                   - 1xtime vector.
 %
 
 
 % Obj variables
 stimulus = obj.stimulus;
-acqGroups = obj.acqGroups;
-tr = obj.tr;
-duration = obj.duration;
+stimAcqGroups = obj.stimAcqGroups;
+stimTime = obj.stimTime;
+stimDeltaT = obj.stimDeltaT;
+dataAcqGroups = obj.dataAcqGroups;
+dataTime = obj.dataTime;
+dataDeltaT = obj.dataDeltaT;
 
-% THe neural signal is the stimulus, scaled by the gain.
-neuralSignal =  x(6) * stimulus;
 
-% Define the timebase in TRs
-timebase = 0:tr:ceil(duration/tr);
+% The neural signal is the stimulus scaled by the gain parameter.
+neuralSignal =  x(4) * stimulus;
+
+% If the stimTime variable is not empty, resample the neuralSignal to match
+% the temporal support of the data.
+if ~isempty(stimTime)
+    neuralSignal = resamp2run(neuralSignal,stimAcqGroups,stimTime,dataAcqGroups,dataTime);
+end
+
+% Construct an HRF
+gamma1 = x(1);
+gamma2 = x(2);
+gammaScale = x(3);
+duration = x(5);
+
+% Define a timebase at the data resolution
+timebase = 0:dataDeltaT:duration;
 
 % Create the double gamma function
-hrf = ((timebase.^(x(2)-1) .* (x(3).^x(2)) .* exp(-x(3).*timebase) ) ./ gamma(x(2)));
-hrf = hrf + x(1) .* ((timebase.^(x(4)-1) .* (x(5).^x(4)) .* exp(-x(5).*timebase) ) ./ gamma(x(4)));
+hrf = gampdf(timebase,gamma1, 1) - ...
+    gampdf(timebase, gamma2, 1)/gammaScale;
 
 % Set to zero at onset
 hrf = hrf - hrf(1);
 
-% Normalize the kernel to have unit area. Transpose the vector so that it
-% is time x 1
-hrf = (hrf/sum(abs(hrf)))';
+% Normalize the kernel to have unit area, accounting for the final temporal
+% resolution of the vector. Note that this is a rough approximation, as
+% the HRF is coarsely sampled here. This will lead to some inaccuracy in
+% the gain parameter. We accept this in exchange for greater speed.
+hrf = hrf/(sum(abs(hrf)) * dataDeltaT);
 
 % Convolve the neural signal by the passed hrf, respecting the boundaries
 % betwen the acquisitions
-fit = conv2run(neuralSignal,hrf,acqGroups);
+fit = conv2run(neuralSignal,hrf,dataAcqGroups);
 
 % Apply the cleaning step
 fit = obj.clean(fit);
-
 
 end
 

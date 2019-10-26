@@ -1,11 +1,13 @@
 function setbounds(obj)
-% Returns bounds on the model parameters
+% Sets the bounds on the model parameters
 %
 % Syntax:
 %   obj.setbounds()
 %
 % Description:
-%   Bounds for the deiveHRF model. 1 x nParams vectors.
+%   Bounds for the deriveHRF model. 
+%
+%   These are specified as 1 x nParams vectors.
 %
 % Inputs:
 %   none
@@ -19,6 +21,7 @@ function setbounds(obj)
 
 
 % Obj variables
+res = obj.res;
 nParams = obj.nParams;
 
 % Define outputs
@@ -26,22 +29,20 @@ lb = nan(1,nParams);
 ub = nan(1,nParams);
 
 % The lower bounds
-lb(1) = -1;             % Aratio
-lb(2) = 2;              % alpha1
-lb(3) = 0.5;            % beta1
-lb(4) = 6;              % alpha2
-lb(5) = 0;              % beta2                    
-lb(6) = 0;              % gain (amplitude) of response
+lb(1) = 3;              % gamma1 (seconds)
+lb(2) = 8;              % gamma2 (seconds)
+lb(3) = 2;              % gammaScale
+lb(4) = 0;              % gain (amplitude) of response
+lb(5) = 16;             % duration (seconds)
 
 % The upper bounds
-ub(1) = 1;              % Aratio
-ub(2) = 10;             % alpha1
-ub(3) = 2;              % beta1
-ub(4) = 25;             % alpha2
-ub(5) = 1.5;            % beta2
-ub(6) = Inf;            % gain (amplitude) of response
+ub(1) = 8;              % gamma1 (seconds)
+ub(2) = 15;             % gamma2 (seconds)
+ub(3) = 50;             % gammaScale
+ub(4) = Inf;            % gain (amplitude) of response
+ub(5) = 40;             % duration (seconds)
 
-% Store the bounds
+% Store the bounds in the object
 obj.lb = lb;
 obj.ub = ub;
 
@@ -51,7 +52,6 @@ obj.ub = ub;
 FiniteDifferenceStepSize = nan(1,nParams);
 FiniteDifferenceStepSize(1,:) = sqrt(eps);
 obj.FiniteDifferenceStepSize = FiniteDifferenceStepSize;
-
 
 end
 

@@ -22,14 +22,20 @@ function genprojection(obj)
 
 
 % Obj variables
-tr = obj.tr;
-nAcqs = obj.nAcqs;
-nTRsPerAcq = obj.nTRsPerAcq;
+dataDeltaT = obj.dataDeltaT;
+dataAcqGroups = obj.dataAcqGroups;
 polyDeg = obj.polyDeg;
+
+nAcqs = max(dataAcqGroups);
+
+% Create a vector with the number of data time points in each acquisition
+for pp=1:nAcqs
+	nTimeSamplesPerAcq(pp) = sum(dataAcqGroups==pp);
+end
 
 % Decide how many low frequencies to filter from each acquisition
 if isempty(polyDeg)
-    polyDeg = round(nTRsPerAcq.*tr/60/2);
+    polyDeg = round(nTimeSamplesPerAcq.*dataDeltaT/60/2);
     obj.polyDeg = polyDeg;
 end
 
@@ -37,9 +43,9 @@ end
 polyregressors = {};
 for pp=1:nAcqs
     if isnan(polyDeg(pp))
-        polyregressors{pp} = zeros(nTRsPerAcq(pp),0);
+        polyregressors{pp} = zeros(nTimeSamplesPerAcq(pp),0);
     else
-        polyregressors{pp} = constructpolynomialmatrix(nTRsPerAcq(pp),0:polyDeg(pp));
+        polyregressors{pp} = constructpolynomialmatrix(nTimeSamplesPerAcq(pp),0:polyDeg(pp));
     end
 end
 
