@@ -60,6 +60,9 @@ hrf = hrf - hrf(1);
 % the gain parameter. We accept this in exchange for greater speed.
 hrf = hrf/(sum(abs(hrf)) * dataDeltaT);
 
+% Make the hrf a column vector
+hrf = hrf';
+
 % Convolve the neural signal by the passed hrf, respecting the boundaries
 % betwen the acquisitions
 fit = conv2run(neuralSignal,hrf,dataAcqGroups);

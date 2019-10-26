@@ -123,10 +123,6 @@ classdef deriveHRF < handle
             obj.dataDeltaT = tr;            
             clear data            
             
-            % Obtain the dimensions of the stimulus frames and store
-            res = [size(stimulus{1},1) size(stimulus{1},2)];
-            obj.res = res;
-
             % Vectorize the stimuli. Create the stimAcqGroups
             % variable. Concatenate and store in the object.
             for ii=1:length(stimulus)

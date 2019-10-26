@@ -21,7 +21,6 @@ function setbounds(obj)
 
 
 % Obj variables
-res = obj.res;
 nParams = obj.nParams;
 
 % Define outputs
