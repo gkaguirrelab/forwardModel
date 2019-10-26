@@ -5,14 +5,40 @@ function results = forwardModel(data,stimulus,tr,varargin)
 %  results = forwardModel(data,stimulus,tr)
 %
 % Description:
-%   Lorem ipsum
+%   Framework for fitting of parameterized, non-linear models to fMRI
+%   time-series data. The fMRI data are passed as a voxel x time matrix;
+%   the stimulus is specified in a matrix with the temporal domain as the
+%   last dimension. Data and stimuli from multiple acquisitions may be
+%   passed in as a cell array of matrices. The stimulus may have a
+%   different temporal resolution than the data, in which case the
+%   key-value stimTime defines the mapping between stimulus and data. All
+%   voxels in the data are processed unless a subset are specified in the
+%   key-value vxs.
+%
+%   The key-value modelClass determines the model to be fit to the data.
+%   Each model is implemented as an object oriented class within the models
+%   directory. The behavior of the model may be controlled by passing
+%   modelOpts, and by passing additional materials in the modelPayload.
+%
+%   This framework is inspred by, and many of the underlying utility
+%   functions taken from, Kendrick Kay's analyzePRF toolbox:
+%       https://github.com/kendrickkay/analyzePRF
 %
 % Inputs:
 %   data                  - A matrix [v t] or cell array of such
 %                           matricies. The fMRI time-series data across t
 %                           TRs, for v vertices / voxels.
-%   stimulus              - A matrix [x y t] or cell array of such
-%                           matrices. 
+%   stimulus              - A matrix in which the last dimension is the
+%                           time domain of the stimulus. The precise form
+%                           of the stimulus matrix is determined by the
+%                           particular model that is to be fit. A typical
+%                           form is [x y st], which provides the property
+%                           of the stimulus in the x-y domain of the
+%                           stimulus display over stimulus time. The input
+%                           may also be a cell array of such matrices. If
+%                           the stimulus time (st) is different in length
+%                           than the data time (t), a valid stimTime
+%                           key-value must be passed (see below).
 %   tr                    - Scalar. The TR of the fMRI data in seconds.
 %
 % Optional key/value pairs:
@@ -21,39 +47,77 @@ function results = forwardModel(data,stimulus,tr,varargin)
 %                             {'pRF','pRF_timeShift'}
 %  'modelOpts'            - A cell array of key-value pairs that are passed
 %                           to the model object at that time of object
-%                           creation.
+%                           creation. For example:
+%                               {'typicalGain',300}
 %  'modelPayload'         - A cell array of additional inputs that is
 %                           passed to the model object. The form of the
 %                           payload is defined by the model object.
+%  'stimTime'             - [1 st] vector or cell array of such vectors
+%                           provides the temporal support for the stimulus
+%                           matrix (or matrices) in units of seconds. Time
+%                           should be defined relative to the start of the
+%                           first TR of each acquisition. Stimulus events
+%                           prior to the onset of the first TR of an
+%                           acquisition can be indicated by negative time
+%                           values. This information could also be passed
+%                           directly in modelOpts.
 %  'vxs'                  - Vector. A list of vertices/voxels to be
 %                           processed.
-%  'maxIter'              - Scalar. The maximum number of iterations
-%                           conducted by lsqcurvefit in model fitting.
+%  'silenceWarnings'      - Logical. Silences warnings regarding imperfect
+%                           model fitting.
 %  'verbose'              - Logical.
 %
 % Outputs:
-%   results               - Structure
+%   results               - Structure. The contents are determined by the
+%                           results method in each model.
 %
 % Examples:
 %{
-    % Create a stimulus
+    % Create a stimulus with 1 second temporal resolution
     stimulus = [];
     stimulus{1}(1,1,:) = repmat([zeros(1,12) ones(1,12)],1,8);
 
-    % Instantiate the "example" model
+    % Instantiate the "pRF_timeShift" model
     tr = 1;
     dummyData = [];
-    dummyData{1}(1,:) = zeros(1,size(stimulus{1},3));
-    model = example(dummyData,stimulus,tr);
+    dummyData{1}(1,:) = repmat([zeros(1,12) ones(1,12)],1,8);
+    model = pRF_timeShift(dummyData,stimulus,tr);
 
     % Create simulated data with the default params, and add some noise
     datats = model.forward(model.initial);
-    datats = datats + randn(size(datats))*25;
+    datats = datats + randn(size(datats))*(model.typicalGain/5);
     data = []
     data{1}(1,:) = datats;
 
     % Call the forwardModel
-    results = forwardModel(data,stimulus,tr,'modelClass','example');
+    results = forwardModel(data,stimulus,tr,'modelClass','pRF_timeShift');
+
+    % Plot the data and the fit
+    figure
+    plot(datats);
+    hold on
+    plot(model.forward(results.params));
+%}
+%{
+    % Create a stimulus with 0.5 second temporal resolution
+    stimulus = [];
+    stimulus{1}(1,1,:) = repmat([zeros(1,24) ones(1,24)],1,8);
+    stimTime{1} = 0:0.5:(size(stimulus{1},3)-1)*0.5;
+
+    % Instantiate the "pRF_timeShift" model
+    tr = 1;
+    dummyData = [];
+    dummyData{1}(1,:) = repmat([zeros(1,12) ones(1,12)],1,8);
+    model = pRF_timeShift(dummyData,stimulus,tr,'stimTime',stimTime);
+
+    % Create simulated data with the default params, and add some noise
+    datats = model.forward(model.initial);
+    datats = datats + randn(size(datats))*(model.typicalGain/5);
+    data = []
+    data{1}(1,:) = datats;
+
+    % Call the forwardModel
+    results = forwardModel(data,stimulus,tr,'modelClass','pRF_timeShift','stimTime',stimTime);
 
     % Plot the data and the fit
     figure
@@ -69,11 +133,12 @@ p = inputParser; p.KeepUnmatched = false;
 % Required
 p.addRequired('data',@(x)(iscell(x) || ismatrix(x)));
 p.addRequired('stimulus',@(x)(iscell(x) || ismatrix(x)));
-p.addRequired('tr',@isscalar);
+p.addRequired('tr',@(x)(isscalar(x) && ~isnan(x)));
 
 p.addParameter('modelClass','pRF_timeShift',@ischar);
-p.addParameter('modelOpts',{'typicalGain',30},@iscell);
+p.addParameter('modelOpts',{},@iscell);
 p.addParameter('modelPayload',{},@iscell);
+p.addParameter('stimTime',{},@(x)(iscell(x) || ismatrix(x)));
 p.addParameter('vxs',[],@isvector);
 p.addParameter('maxIter',500,@isscalar);
 p.addParameter('silenceWarnings',true,@islogical);
@@ -87,11 +152,11 @@ silenceWarnings = p.Results.silenceWarnings;
 
 %% Alert the user
 if verbose
-    fprintf(['Fitting the ' p.Results.modelClass ' model.\n\n']);
+    fprintf(['\nFitting the ' p.Results.modelClass ' model.\n\n']);
 end
 
 
-%% Massage inputs and set constants
+%% Check inputs and set constants
 % Place the data and stimulus in a cell if not already so
 if ~iscell(data)
     data = {data};
@@ -100,9 +165,30 @@ if ~iscell(stimulus)
     stimulus = {stimulus};
 end
 
-% Identify the row and columns of the data matrix
-dimdata = 1;
-totalVxs = size(data{1},dimdata);
+% Confirm that the data and stimulus cell arrays are of the same length
+if length(data) ~= length(stimulus)
+    error('forwardModel:inputMismatch','Different number of acquisitions specified in the data and stimulus variables');
+end
+
+% Make sure stimTime is a cell vector. If not defined, create a cell array
+% of empty vectors equal to the number of stimulus matrices.
+if ~isempty(p.Results.stimTime)
+    if ~iscell(p.Results.stimTime)
+        stimTime = {p.Results.stimTime};
+    else
+        stimTime = p.Results.stimTime;
+    end
+    % Make sure that the length of the stimTime cell array is the same as
+    % the length of the stimulus cell array
+    if length(stimTime) ~= length(stimulus)
+        error('forwardModel:inputMismatch','Different number of acquisitions specified in the stimTime and stimulus variables');
+    end
+else
+    stimTime = p.Results.stimTime;
+end
+
+% The first dimension of the data matrix indexes across voxels/vertices
+totalVxs = size(data{1},1);
 
 % Define vxs (the voxel/vertex set to process)
 if isempty(p.Results.vxs)
@@ -115,6 +201,7 @@ end
 %% Set up model
 % Create the model object
 model = feval(p.Results.modelClass,data,stimulus,p.Results.tr,...
+    'stimTime',stimTime, ...
     'payload',p.Results.modelPayload, ...
     p.Results.modelOpts{:});
 
@@ -151,19 +238,27 @@ lb = model.lb; ub = model.ub;
 % Alert the user
 if verbose
     tic
-    fprintf(['Fitting non-linear model over ' num2str(length(vxs)) ' vertices:\n']);
+    if length(vxs)==1
+        fprintf(['Fitting model over one vertex:\n']);
+    else
+        fprintf(['Fitting model over ' num2str(length(vxs)) ' vertices:\n']);
+    end
     fprintf('| 0                      50                   100%% |\n');
-    fprintf('.\n');
+    if isdeployed
+        fprintf('.');
+    else
+        fprintf('.\n');
+    end
 end
 
 % Store the warning state
 warningState = warning;
 
 % Loop through the voxels/vertices in vxs
-parfor ii=1:length(vxs)
+for ii=1:length(vxs)
     
     % Silence warnings if so instructed. This must be done inside the
-    % parloop to apply to each worker.
+    % par loop to apply to each worker.
     if silenceWarnings
         warning('off','MATLAB:singularMatrix');
         warning('off','MATLAB:nearlySingularMatrix');
@@ -172,14 +267,13 @@ parfor ii=1:length(vxs)
 
     % Update progress bar
     if verbose && mod(ii,round(length(vxs)/50))==0
-        if ismac
+        if isdeployed
+            fprintf('.');
+        else
             fprintf('\b.\n');
         end
-        if isunix
-            fprintf('.');
-        end
     end
-
+    
     % Squeeze the data from a cell array into a single concatenated time
     % series for the selected voxel/vertex
     datats = cell2mat(cellfun(@(x) x(vxs(ii),:),data,'UniformOutput',0))';
@@ -230,12 +324,15 @@ end
 
 % report completion of loop
 if verbose
+    if isdeployed
+        fprintf('\n');
+    end
     toc
     fprintf('\n');
 end
 
 % Restore the warning state. It shouldn't be changed up here at the main
-% execution level since warnings were silenced withihn the worker pool, but
+% execution level since warnings were silenced within the worker pool, but
 % restoring here to be safe.
 warning(warningState);
 
@@ -254,12 +351,11 @@ results = model.results(params, metric);
 % Add the model information
 results.model.class = p.Results.modelClass;
 results.model.inputs = {stimulus, p.Results.tr};
-results.model.opts =  p.Results.modelOpts;
+results.model.opts =  [p.Results.modelOpts 'stimTime' stimTime];
 results.model.payload =  p.Results.modelPayload;
 
 % Store the calling options
 results.meta.vxs = p.Results.vxs;
 results.meta.tr = p.Results.tr;
-results.meta.maxIter = p.Results.maxIter;
 
 end

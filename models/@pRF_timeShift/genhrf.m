@@ -24,7 +24,7 @@ function genhrf(obj)
 
 
 % Obj variables
-tr = obj.tr;
+dataDeltaT = obj.dataDeltaT;
 hrfParams = obj.hrfParams;
 
 % Unpack hrfParams
@@ -33,8 +33,9 @@ gamma2 = hrfParams(2);
 gammaScale = hrfParams(3);
 duration = hrfParams(4);
 
-% Defin the timebase
-timebase = 0:tr:ceil(duration/tr);
+% Define an initial timebase for creation in 100 msec units
+genDeltaT = 0.1;
+timebase = 0:genDeltaT:duration;
 
 % Create the double gamma function
 hrf = gampdf(timebase,gamma1, 1) - ...
@@ -43,8 +44,13 @@ hrf = gampdf(timebase,gamma1, 1) - ...
 % Set to zero at onset
 hrf = hrf - hrf(1);
 
-% Normalize the kernel to have unit area
-hrf = hrf/sum(abs(hrf));
+% Normalize the kernel to have unit area, accounting for the final temporal
+% resolution of the vector
+areaTimeScale = genDeltaT / dataDeltaT;
+hrf = hrf/(sum(abs(hrf)) * areaTimeScale);
+
+% Resample the HRF to the data timebase
+hrf = interp1(timebase, hrf, 0:dataDeltaT:ceil(duration/dataDeltaT),'linear',0);
 
 % Store the hrf in the object. Transpose the vector so that it is time x 1
 obj.hrf = hrf';

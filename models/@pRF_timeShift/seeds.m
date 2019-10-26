@@ -100,7 +100,11 @@ if verbose
     tic
     fprintf(['Generating ' num2str(size(allseeds,1)) ' seeds:\n']);
     fprintf('| 0                      50                   100%% |\n');
-    fprintf('.\n');
+    if isdeployed
+        fprintf('.');
+    else
+        fprintf('.\n');
+    end
 end
 
 % Create a function handle to avoid broadcasting the model obj
@@ -111,11 +115,10 @@ parfor ii = 1:size(allseeds,1)
 
     % Update progress bar
     if verbose && mod(ii,round(size(allseeds,1)/50))==0
-        if ismac
-            fprintf('\b.\n');
-        end
-        if isunix
+        if isdeployed
             fprintf('.');
+        else
+            fprintf('\b.\n');
         end
     end
 
