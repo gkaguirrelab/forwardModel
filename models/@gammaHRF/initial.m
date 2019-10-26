@@ -26,9 +26,9 @@ nParams = obj.nParams;
 x0 = zeros(1,nParams);
 
 % Assemble X0
-x0(1) = 6;              % gamma1 (seconds)
-x0(2) = 12;             % gamma2 (seconds)
-x0(3) = 10;             % gammaScale
+x0(1) = 4;              % gamma1 (seconds)
+x0(2) = 10;             % gamma2 (seconds)
+x0(3) = 7;              % gammaScale
 x0(4) = typicalGain;    % typical gain (amplitude)
 x0(5) = 20;             % duration (seconds)
 
