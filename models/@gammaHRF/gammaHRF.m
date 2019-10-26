@@ -1,4 +1,4 @@
-classdef deriveHRF < handle
+classdef gammaHRF < handle
     
     properties (Constant)
                 
@@ -93,7 +93,7 @@ classdef deriveHRF < handle
     methods
 
         % Constructor
-        function obj = deriveHRF(data,stimulus,tr,varargin)
+        function obj = gammaHRF(data,stimulus,tr,varargin)
                         
             % instantiate input parser
             p = inputParser; p.KeepUnmatched = false;
