@@ -29,14 +29,14 @@ ub = nan(1,nParams);
 
 % The lower bounds
 lb(1) = 3;              % gamma1 (seconds)
-lb(2) = 8;              % gamma2 (seconds)
+lb(2) = 6;              % gamma2 (seconds)
 lb(3) = 0;              % undershootGain
 lb(4) = -Inf;           % gain (amplitude) of response
 lb(5) = 16;             % duration (seconds)
 
 % The upper bounds
-ub(1) = 8;              % gamma1 (seconds)
-ub(2) = 15;             % gamma2 (seconds)
+ub(1) = 7;              % gamma1 (seconds)
+ub(2) = 12;             % gamma2 (seconds)
 ub(3) = 0.5;            % undershootGain
 ub(4) = Inf;            % gain (amplitude) of response
 ub(5) = 40;             % duration (seconds)
