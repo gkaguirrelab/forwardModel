@@ -366,11 +366,11 @@ end
 results.model.opts =  [p.Results.modelOpts 'stimTime' stimTime];
 results.model.payload =  p.Results.modelPayload;
 
+% Store the calling options
+results.meta.vxs = vxs;
+results.meta.tr = p.Results.tr;
+
 % Add plots to the results
 results = model.plot(data, results);
-
-% Store the calling options
-results.meta.vxs = p.Results.vxs;
-results.meta.tr = p.Results.tr;
 
 end

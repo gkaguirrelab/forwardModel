@@ -39,7 +39,7 @@ datats = obj.clean(datats);
 modelts = obj.forward(results.params(vxs(vx),:));
 
 % Visualize the model fit
-fig1 = figure('visible','on');
+fig1 = figure('visible','off');
 set(fig1,'PaperOrientation','landscape');
 set(fig1,'PaperUnits','normalized');
 set(fig1,'PaperPosition', [0 0 1 1]);

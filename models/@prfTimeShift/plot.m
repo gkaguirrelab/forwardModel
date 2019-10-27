@@ -33,10 +33,10 @@ fitThresh = 0.20;                   % R^2 threshold to display
 
 % Grab a time series
 datats = data(vx,:)';
-datats = model.clean(datats);
+datats = obj.clean(datats);
 
 % Obtain the model fit
-modelts = model.forward(results.params(vxs(vx),:));
+modelts = obj.forward(results.params(vxs(vx),:));
 
 % Visualize the model fit
 fig1 = figure('visible','off');
@@ -54,6 +54,7 @@ ax = axis;
 axis([.5 size(datats,1)+.5 ax(3:4)]);
 title(['Time-series data, CIFTI vertex ' num2str(vx)]);
 
+results.figures.exampleFits = returnFigVar(fig1);
 
 
 
