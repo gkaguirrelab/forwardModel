@@ -149,8 +149,11 @@ classdef gammaHRF < handle
                 % We have a stimTime variable.
                 stimTime = p.Results.stimTime;
                 % Make sure that all of the stimTime vectors are regularly
-                % sampled
-                regularityCheck = cellfun(@(x) length(unique(diff(x))),stimTime);
+                % sampled, with some tolerance introduced by the round
+                % function to three decimal places. This is because the
+                % diff function can return slightly different values for
+                % what should be equally spaced arrays.
+                regularityCheck = cellfun(@(x) length(unique(round(diff(x),3))),stimTime);
                 if any(regularityCheck ~= 1)
                     error('forwardModelObj:timeMismatch','One or more stimTime vectors are not regularly sampled');
                 end
@@ -205,5 +208,6 @@ classdef gammaHRF < handle
         metric = metric(obj, signal, x)
         seeds = seeds(obj, data, vxs)
         results = results(obj, params, metric)
+        results = plot(obj, data, results)
     end
 end

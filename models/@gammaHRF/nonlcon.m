@@ -20,8 +20,9 @@ function [c, ceq] = nonlcon(obj, x)
 %   c, ceq                - Scalars.
 %
 
-% Non-linear constraint not used in this model
-c = [];
+% The gamma1 parameter should be smaller (earlier in time) than the gamma2
+% parameter
+c = x(1) - x(2);
 ceq = [];
 
 

@@ -5,7 +5,7 @@ function results = forwardModel(data,stimulus,tr,varargin)
 %  results = forwardModel(data,stimulus,tr)
 %
 % Description:
-%   Framework for fitting of parameterized, non-linear models to fMRI
+%   Framework for non-linea fitting of parameterized models to fMRI
 %   time-series data. The fMRI data are passed as a voxel x time matrix;
 %   the stimulus is specified in a matrix with the temporal domain as the
 %   last dimension. Data and stimuli from multiple acquisitions may be
@@ -241,6 +241,9 @@ end
 % Obtain the model bounds
 lb = model.lb; ub = model.ub;
 
+% Define an anonymous function as a non-linear constraint
+nonlcon = @(x) model.nonlcon(x);
+
 % Alert the user
 if verbose
     tic
@@ -308,7 +311,7 @@ parfor ii=1:length(vxs)
             myObj = @(x) norm(datats - model.forward(xSort{bb}([x x0(fixSet)])));
             x = fmincon(myObj,x0(floatSet),[],[],[],[], ...
                 lb(floatSet),ub(floatSet), ...
-                model.nonlcon, options{bb});
+                nonlcon, options{bb});
             
             % Update the x0 guess with the searched params
             x0(model.floatSet{bb}) = x;
@@ -362,6 +365,9 @@ if isempty(stimTime)
 end
 results.model.opts =  [p.Results.modelOpts 'stimTime' stimTime];
 results.model.payload =  p.Results.modelPayload;
+
+% Add plots to the results
+results = model.plot(data, results);
 
 % Store the calling options
 results.meta.vxs = p.Results.vxs;

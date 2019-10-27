@@ -28,15 +28,8 @@ dataAcqGroups = obj.dataAcqGroups;
 dataTime = obj.dataTime;
 dataDeltaT = obj.dataDeltaT;
 
-
 % The neural signal is the stimulus scaled by the gain parameter.
 neuralSignal =  x(4) * stimulus;
-
-% If the stimTime variable is not empty, resample the neuralSignal to match
-% the temporal support of the data.
-if ~isempty(stimTime)
-    neuralSignal = resamp2run(neuralSignal,stimAcqGroups,stimTime,dataAcqGroups,dataTime);
-end
 
 % Construct an HRF
 gamma1 = x(1);
@@ -45,7 +38,7 @@ undershootGain = x(3);
 duration = x(5);
 
 % Define a timebase at the data resolution
-timebase = 0:dataDeltaT:duration;
+timebase = 0:stimDeltaT:duration;
 
 % Create the double gamma function
 g1 = gampdf(timebase,gamma1, 1);
@@ -57,18 +50,21 @@ hrf = g1 - g2;
 % Set to zero at onset
 hrf = hrf - hrf(1);
 
-% Normalize the kernel to have unit area, accounting for the final temporal
-% resolution of the vector. Note that this is a rough approximation, as
-% the HRF is coarsely sampled here. This will lead to some inaccuracy in
-% the gain parameter. We accept this in exchange for greater speed.
-hrf = hrf/(sum(abs(hrf)) * dataDeltaT);
+% Normalize the kernel to have unit area.
+hrf = hrf/(sum(abs(hrf)));
 
 % Make the hrf a column vector
 hrf = hrf';
 
 % Convolve the neural signal by the passed hrf, respecting the boundaries
 % betwen the acquisitions
-fit = conv2run(neuralSignal,hrf,dataAcqGroups);
+fit = conv2run(neuralSignal,hrf,stimAcqGroups);
+
+% If the stimTime variable is not empty, resample the fit to match
+% the temporal support of the data.
+if ~isempty(stimTime)
+    fit = resamp2run(fit,stimAcqGroups,stimTime,dataAcqGroups,dataTime);
+end
 
 % Apply the cleaning step
 fit = obj.clean(fit);

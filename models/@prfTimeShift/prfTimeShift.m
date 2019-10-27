@@ -145,7 +145,7 @@ classdef prfTimeShift < handle
             
             p.addParameter('stimTime',{},@iscell);
             p.addParameter('payload',{},@iscell);
-            p.addParameter('hrfParams',[4 10 7 20],@isvector);
+            p.addParameter('hrfParams',[4 10 0.15 20],@isvector);
             p.addParameter('polyDeg',[],@isnumeric);
             p.addParameter('typicalGain',300,@isscalar);
             p.addParameter('seedScale','medium',@ischar);
@@ -275,5 +275,6 @@ classdef prfTimeShift < handle
         metric = metric(obj, signal, x)
         seeds = seeds(obj, data, vxs)
         results = results(obj, params, metric)
+        results = plot(obj, data, results)
     end
 end

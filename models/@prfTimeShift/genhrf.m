@@ -30,7 +30,7 @@ hrfParams = obj.hrfParams;
 % Unpack hrfParams
 gamma1 = hrfParams(1);
 gamma2 = hrfParams(2);
-gammaScale = hrfParams(3);
+undershootGain = hrfParams(3);
 duration = hrfParams(4);
 
 % Define an initial timebase for creation in 100 msec units
@@ -38,8 +38,13 @@ genDeltaT = 0.1;
 timebase = 0:genDeltaT:duration;
 
 % Create the double gamma function
-hrf = gampdf(timebase,gamma1, 1) - ...
-    gampdf(timebase, gamma2, 1)/gammaScale;
+
+% Create the double gamma function
+g1 = gampdf(timebase,gamma1, 1);
+g1 = g1./ max(g1);
+g2 = gampdf(timebase, gamma2, 1);
+g2 = (g2/ max(g2)) * undershootGain;
+hrf = g1 - g2;
 
 % Set to zero at onset
 hrf = hrf - hrf(1);
