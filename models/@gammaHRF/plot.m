@@ -26,36 +26,67 @@ function results = plot(obj, data, results)
 
 % Define some variables
 vxs = results.meta.vxs;          % vector of analyzed vertices / voxels
-fitThresh = 0.20;                   % R^2 threshold to display
+
+
+% Setup a figure
+fig1 = figure('visible','off');
+set(fig1,'PaperOrientation','landscape');
+set(fig1,'PaperUnits','normalized');
+set(gcf,'Units','points','Position',[500 500 750 500]);
 
 % Pick the voxel with the best model fit
 [~,vx]=nanmax(results.R2(vxs));
+
+% Grab the time series
+datats = data(vx,:)';
+datats = obj.clean(datats);
+
+% Obtain the model fit and hrf
+[modelts, hrf] = obj.forward(results.params(vxs(vx),:));
+
+% Plot the time series
+subplot(2,5,1:4)
+plot(obj.dataTime,datats,'r-');
+hold on;
+plot(obj.dataTime,modelts,'b-');
+xlabel('Time [seconds]');
+ylabel('BOLD signal');
+title(['Best fit time-series, CIFTI vertex ' num2str(vxs(vx))]);
+
+% Plot the HRF
+subplot(2,5,5)
+plot(0:obj.stimDeltaT:(length(hrf)-1)*obj.stimDeltaT,hrf)
+xlabel('Time [seconds]');
+title('HRF');
+
+% Now pick the voxel with the median model fit
+vx=find( results.R2(vxs)==nanmedian(results.R2(vxs)) );
 
 % Grab a time series
 datats = data(vx,:)';
 datats = obj.clean(datats);
 
-% Obtain the model fit
-modelts = obj.forward(results.params(vxs(vx),:));
+% Obtain the model fit and hrf
+[modelts, hrf] = obj.forward(results.params(vxs(vx),:));
 
-% Visualize the model fit
-fig1 = figure('visible','off');
-set(fig1,'PaperOrientation','landscape');
-set(fig1,'PaperUnits','normalized');
-set(fig1,'PaperPosition', [0 0 1 1]);
-
+% Plot the time series
+subplot(2,5,6:9)
+plot(obj.dataTime,datats,'r-');
 hold on;
-set(gcf,'Units','points','Position',[100 100 1000 100]);
-plot(datats,'r-');
-plot(modelts,'b-');
-xlabel('Time (TRs)');
+plot(obj.dataTime,modelts,'b-');
+xlabel('Time [seconds]');
 ylabel('BOLD signal');
-ax = axis;
-axis([.5 size(datats,1)+.5 ax(3:4)]);
-title(['Time-series data, CIFTI vertex ' num2str(vx)]);
+title(['Median quality fit time-series, CIFTI vertex ' num2str(vxs(vx))]);
 
-results.figures.exampleFits = returnFigVar(fig1);
+% Plot the hrf
+subplot(2,5,10)
+plot(0:obj.stimDeltaT:(length(hrf)-1)*obj.stimDeltaT,hrf)
+xlabel('Time [seconds]');
+title('HRF');
 
+% Store the figure contents in a variable
+results.figures.fig1 = returnFigVar(fig1);
+results.figures.fig1.format = '-dpdf';
 
 
 end

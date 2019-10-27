@@ -112,11 +112,11 @@ classdef gammaHRF < handle
             % parse
             p.parse(data, stimulus, tr, varargin{:})
             
-            % Create the dataTime and dataAcqGroups variables
-            % Concatenate and store in the object.
+            % Create the dataTime and dataAcqGroups variables. Concatenate
+            % and store in the object.
             for ii=1:length(data)                
                 dataAcqGroups{ii} = ii*ones(size(data{ii},2),1);
-                dataTime{ii} = 0:tr:tr*size(data{ii},2);
+                dataTime{ii} = 0:tr:tr*(size(data{ii},2)-1);
             end
             obj.dataAcqGroups = catcell(1,dataAcqGroups);
             obj.dataTime = catcell(1,dataTime);
