@@ -1,39 +1,49 @@
 function s = returnFigVar(figHandle)
-% Brief one line description of the function
+% Returns a structure with the information for plotting a figure
 %
 % Syntax:
-%   outputs = func(inputs)
+%   s = returnFigVar(figHandle)
 %
 % Description:
-%   Foo
-%   struct2handle(s.hgS_070000,0,'convert');
+%   When passed a handle to a figure, the routine will close the figure and
+%   return a structure that contains all information needed to recreate the
+%   figure. Given the returned structure, "s", this command will
+%   reinstantiate the figure:
+%
+%       struct2handle(s.hgS_070000,0,'convert');
 %
 % Inputs:
-%   none
-%   foo                   - Scalar. Foo foo foo foo foo foo foo foo foo foo
-%                           foo foo foo foo foo foo foo foo foo foo foo foo
-%                           foo foo foo
+%   figHandle             - Handle to a figure object.
 %
 % Optional key/value pairs:
 %   none
-%  'bar'                  - Scalar. Bar bar bar bar bar bar bar bar bar bar
-%                           bar bar bar bar bar bar bar bar bar bar bar bar
-%                           bar bar bar bar bar bar
 %
 % Outputs:
-%   none
-%   baz                   - Cell. Baz baz baz baz baz baz baz baz baz baz
-%                           baz baz baz baz baz baz baz baz baz baz baz baz
-%                           baz baz baz
+%   s                     - Structure. Contains fields with information
+%                           that describe how to plot the figure.
 %
 % Examples:
 %{
+    % Create a figure with some stuff in it
+    figHandle = figure;
+    plot(rand(10));
+    title('This is my figure');
+
+    % Call the routine. The figure is closed
+    s = returnFigVar(figHandle);
+
+    % Invoking struct2handle recreates the figure
+    struct2handle(s.hgS_070000,0,'convert');
 %}
 
+% Save the figure to a temporary file location
 tmpName = tempname;
 savefig(figHandle,tmpName);
+
+% Close the figure
 close(figHandle)
 
+% Reload the figure data into a structure
 s = load([tmpName '.fig'],'-mat','hgS_070000');
 
 end
