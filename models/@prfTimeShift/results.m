@@ -44,7 +44,11 @@ results.angle = ...
     mod( atan2( rCenter - r, c - cCenter ), 2*pi ) / pi*180;
 results.eccen = ...
     sqrt( (rCenter - r).^2 + (c - cCenter).^2);
-results.sigma =    params(:,3);
+% The division by the square root of the exponent is inherited from
+% Kendrick's PRF code. I don't currently understand the rationale for the
+% adjustment, but I do note that without it, the reported pRF sizes appear
+% too small.
+results.sigma =    params(:,3)./sqrt(params(:,5));
 results.gain =     params(:,4);
 results.expt =     params(:,5);
 results.hrfshift = params(:,6);

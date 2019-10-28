@@ -129,8 +129,8 @@ set(gca, 'Units', 'Points');
 axpos = get(gca,'Position');
 set(gca, 'Units', currentunits);
 
-% Calculate Marker width in points
-markerWidth = (results.sigma(goodIdx))./diff(xlim)*axpos(3); 
+% Calculate Marker width in points for a 2SD RF
+markerWidth = (2.*results.sigma(goodIdx))./diff(xlim)*axpos(3); 
 set(h, 'SizeData', markerWidth.^2)
 
 % Store the figure contents in a variable
