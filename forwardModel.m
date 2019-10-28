@@ -5,7 +5,7 @@ function results = forwardModel(data,stimulus,tr,varargin)
 %  results = forwardModel(data,stimulus,tr)
 %
 % Description:
-%   Framework for non-linea fitting of parameterized models to fMRI
+%   Framework for non-linear fitting of parameterized models to fMRI
 %   time-series data. The fMRI data are passed as a voxel x time matrix;
 %   the stimulus is specified in a matrix with the temporal domain as the
 %   last dimension. Data and stimuli from multiple acquisitions may be
@@ -59,10 +59,10 @@ function results = forwardModel(data,stimulus,tr,varargin)
 %                           first TR of each acquisition. Stimulus events
 %                           prior to the onset of the first TR of an
 %                           acquisition can be indicated by negative time
-%                           values. This information could also be passed
-%                           directly in modelOpts.
+%                           values.
 %  'vxs'                  - Vector. A list of vertices/voxels to be
-%                           processed.
+%                           processed. If not specified, all rows of the
+%                           data matrix will be analyzed.
 %  'silenceWarnings'      - Logical. Silences warnings regarding imperfect
 %                           model fitting.
 %  'verbose'              - Logical.
