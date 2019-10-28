@@ -9,7 +9,7 @@ function results = plot(obj, data, results)
 %   on how to display the figure.
 %
 % Inputs:
-%   data                  - 
+%   data                  -
 %   results               - Structure, with fields for each of the
 %                           parameters, the metric, and some meta data.
 %
@@ -95,6 +95,18 @@ results.figures.fig1.format = '-dpdf';
 
 
 %% Figure 2
+
+% Obj variables
+res = obj.res;
+pixelsPerDegree = obj.pixelsPerDegree;
+lb = obj.lb;
+ub = obj.ub;
+
+% Stimulus center
+rCenter = (1+res(1))/2;
+cCenter = (1+res(2))/2;
+
+
 fig2 = figure('visible','off');
 set(fig2,'PaperOrientation','landscape');
 set(fig2,'PaperUnits','normalized');
@@ -105,20 +117,21 @@ h = scatter(results.cartX(goodIdx),results.cartY(goodIdx),...
     'o','filled', ...
     'MarkerFaceAlpha',1/8,'MarkerFaceColor','red');
 
+xlim(([lb(1) ub(1)]-rCenter)./pixelsPerDegree);
+ylim(([lb(2) ub(2)]-cCenter)./pixelsPerDegree);
+axis equal
+xlabel('X-position (deg)');
+ylabel('Y-position (deg)');
+title('pRF centers and sizes in visual field degrees');
+
 currentunits = get(gca,'Units');
 set(gca, 'Units', 'Points');
 axpos = get(gca,'Position');
 set(gca, 'Units', currentunits);
-markerWidth = (results.sigma(goodIdx))./diff(xlim)*axpos(3); % Calculate Marker width in points
+
+% Calculate Marker width in points
+markerWidth = (results.sigma(goodIdx))./diff(xlim)*axpos(3); 
 set(h, 'SizeData', markerWidth.^2)
-
-xlim([obj.lb(1) obj.ub(1)]);
-ylim([obj.lb(2) obj.ub(2)]);
-axis equal
-
-xlabel('X-position (deg)');
-ylabel('Y-position (deg)');
-title('pRF centers and sizes in visual field degrees');
 
 % Store the figure contents in a variable
 results.figures.fig2 = returnFigVar(fig2);
