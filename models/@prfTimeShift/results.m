@@ -44,7 +44,7 @@ results.angle = ...
     mod( atan2( rCenter - r, c - cCenter ), 2*pi ) / pi*180;
 results.eccen = ...
     sqrt( (rCenter - r).^2 + (c - cCenter).^2);
-results.sigma =   abs(params(:,3) ./ sqrt(params(:,5)));
+results.sigma =    params(:,3);
 results.gain =     params(:,4);
 results.expt =     params(:,5);
 results.hrfshift = params(:,6);
