@@ -104,11 +104,11 @@ function results = forwardModel(data,stimulus,tr,varargin)
     stimulus{1}(1,1,:) = repmat([zeros(1,24) ones(1,24)],1,8);
     stimTime{1} = 0:0.5:(size(stimulus{1},3)-1)*0.5;
 
-    % Instantiate the "pRF_timeShift" model
+    % Instantiate the "prfTimeShift" model
     tr = 1;
     dummyData = [];
     dummyData{1}(1,:) = repmat([zeros(1,12) ones(1,12)],1,8);
-    model = pRF_timeShift(dummyData,stimulus,tr,'stimTime',stimTime);
+    model = prfTimeShift(dummyData,stimulus,tr,'stimTime',stimTime);
 
     % Create simulated data with the default params, and add some noise
     datats = model.forward(model.initial);
@@ -117,7 +117,7 @@ function results = forwardModel(data,stimulus,tr,varargin)
     data{1}(1,:) = datats;
 
     % Call the forwardModel
-    results = forwardModel(data,stimulus,tr,'modelClass','pRF_timeShift','stimTime',stimTime);
+    results = forwardModel(data,stimulus,tr,'modelClass','prfTimeShift','stimTime',stimTime);
 
     % Plot the data and the fit
     figure
