@@ -4,9 +4,7 @@ forwardModel is a MATLAB toolbox for non-linear fitting of models to fMRI data. 
 
 The legacy of Kendrick's code is most clearly seen in the model for pRF mapping in retinotopic data. Specifically, the approach to creating seeds, and the inclusion of a compressive non-linearity in the modeled neural response, which is taken from:
 
-  Kay KN, Winawer J, Mezer A and Wandell BA (2013) 
-    Compressive spatial summation in human visual cortex.
-    J. Neurophys. doi: 10.1152/jn.00105.2013
+  Kay KN, Winawer J, Mezer A and Wandell BA (2013) Compressive spatial summation in human visual cortex. J. Neurophys. doi: 10.1152/jn.00105.2013
 
 The implementation of pRF mapping implemented here differs from Kendrick's original code in a few ways:
   - The HRF is modeled as a double-gamma, which can be modified under the control of parameters
