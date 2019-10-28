@@ -263,8 +263,8 @@ warningState = warning;
 % Loop through the voxels/vertices in vxs
 parfor ii=1:length(vxs)
     
-    % Silence warnings if so instructed. This must be done inside the
-    % par loop to apply to each worker.
+    % Silence warnings if so instructed. This must be done inside the par
+    % loop to apply to each worker.
     if silenceWarnings
         warning('off','MATLAB:singularMatrix');
         warning('off','MATLAB:nearlySingularMatrix');
@@ -281,11 +281,11 @@ parfor ii=1:length(vxs)
     end
     
     % Get the time series for the selected voxel/vertex, transpose to a
-    % column vector (time x 1);
+    % column vector (time x 1)
     datats = data(ii,:)';
     
     % Apply the model cleaning step, which may include regression of
-    % nuisance components.
+    % nuisance components
     datats = model.clean(datats);
     
     % Pre-allocate the seed search result variables to keep par happy
@@ -333,7 +333,7 @@ parfor ii=1:length(vxs)
     
 end
 
-% report completion of loop
+% Report completion of loop
 if verbose
     if isdeployed
         fprintf('\n');
@@ -342,9 +342,9 @@ if verbose
     fprintf('\n');
 end
 
-% Restore the warning state. It shouldn't be changed up here at the main
-% execution level since warnings were silenced within the worker pool, but
-% restoring here to be safe.
+% Restore the warning state. It shouldn't be changed at the main execution
+% level since warnings were silenced within the worker pool, but restoring
+% here to be safe.
 warning(warningState);
 
 % Map the par variables into full variables
