@@ -135,7 +135,7 @@ p.addRequired('data',@(x)(iscell(x) || ismatrix(x)));
 p.addRequired('stimulus',@(x)(iscell(x) || ismatrix(x)));
 p.addRequired('tr',@(x)(isscalar(x) && ~isnan(x)));
 
-p.addParameter('modelClass','pRF_timeShift',@ischar);
+p.addParameter('modelClass','prfTimeShift',@ischar);
 p.addParameter('modelOpts',{},@iscell);
 p.addParameter('modelPayload',{},@iscell);
 p.addParameter('stimTime',{},@(x)(iscell(x) || ismatrix(x)));
