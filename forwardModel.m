@@ -241,9 +241,6 @@ end
 % Obtain the model bounds
 lb = model.lb; ub = model.ub;
 
-% Define an anonymous function as a non-linear constraint
-nonlcon = @(x) model.nonlcon(x);
-
 % Alert the user
 if verbose
     tic
@@ -264,7 +261,7 @@ end
 warningState = warning;
 
 % Loop through the voxels/vertices in vxs
-parfor ii=1:length(vxs)
+for ii=1:length(vxs)
     
     % Silence warnings if so instructed. This must be done inside the
     % par loop to apply to each worker.
@@ -306,9 +303,14 @@ parfor ii=1:length(vxs)
             % Get the params in the fix and float set for this stage
             fixSet = model.fixSet{bb};
             floatSet = model.floatSet{bb};
+
+            % Define an anonymous function as a non-linear constraint
+            nonlcon = @(x) model.nonlcon(xSort{bb}([x x0(fixSet)]));
+            
+            % Define an anonymous function as an objective
+            myObj = @(x) norm(datats - model.forward(xSort{bb}([x x0(fixSet)])));
             
             % Call the non-linear fit function
-            myObj = @(x) norm(datats - model.forward(xSort{bb}([x x0(fixSet)])));
             x = fmincon(myObj,x0(floatSet),[],[],[],[], ...
                 lb(floatSet),ub(floatSet), ...
                 nonlcon, options{bb});
