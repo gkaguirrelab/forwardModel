@@ -112,10 +112,16 @@ set(fig2,'PaperOrientation','landscape');
 set(fig2,'PaperUnits','normalized');
 set(gcf,'Units','points','Position',[100 100 400 400]);
 
+% Identify the vertices with fits above the threshold
 goodIdx = results.R2 > fitThresh;
-h = scatter(results.cartX(goodIdx),results.cartY(goodIdx),...
-    'o','filled', ...
-    'MarkerFaceAlpha',1/8,'MarkerFaceColor','red');
+
+% Map R2 value to a gray-red plot symbol color
+nColors = 201;
+grayRed = [linspace(0.75,1,201)', linspace(0.75,0,201)', linspace(0.75,0,201)'];
+colorTriple = grayRed(round((results.R2(goodIdx))*(nColors-1)+1),:);
+
+h = scatter(results.cartX(goodIdx)',results.cartY(goodIdx)',50, ...
+    colorTriple,'filled','o','MarkerFaceAlpha',1/8);
 
 xlim(([lb(1) ub(1)]-rCenter)./pixelsPerDegree);
 ylim(([lb(2) ub(2)]-cCenter)./pixelsPerDegree);
