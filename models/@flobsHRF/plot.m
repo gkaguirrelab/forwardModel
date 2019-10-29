@@ -103,12 +103,14 @@ if length(vxs) < size(results.params,1)
     set(fig2,'PaperUnits','normalized');
     set(gcf,'Units','points','Position',[500 500 750 500]);
     
-    % Obtain the weighted mean and SD parameters
-    xMean = sum(results.params(vxs,:).*results.R2(vxs),1)./sum(results.R2(vxs));
-    xSD = sqrt(var(results.params(vxs,:),results.R2(vxs),1));
-
+    % Obtain the weighted median and SD parameters
+    for ii = 1:obj.nParams
+        [xMedian(ii),xSD(ii)] = ...
+            wtmedian(results.params(vxs,ii),results.R2(vxs));
+    end
+    
     % Plot the HRF
-    hrf = obj.flobsbasis*xMean';
+    hrf = obj.flobsbasis*xMedian';
 
     plot(0:obj.stimDeltaT:(length(hrf)-1)*obj.stimDeltaT,hrf)
     xlabel('Time [seconds]');
@@ -117,10 +119,10 @@ if length(vxs) < size(results.params,1)
     % Add the parameters in a text box
     dim = [0.5 0.5 0.3 0.3];
     str = sprintf([...
-        '      [ eigen1, eigen2, eigen3 ]\n'...
-        'mean: [ %2.4f, %2.4f, %2.4f ]\n' ...
-        'SD:   [ %2.4f, %2.4f, %2.4f ]'], ...
-        xMean,xSD);
+        '        [ eigen1, eigen2, eigen3 ]\n'...
+        'median: [ %2.4f, %2.4f, %2.4f ]\n' ...
+        'SD:     [ %2.4f, %2.4f, %2.4f ]'], ...
+        xMedian,xSD);
     annotation('textbox',dim,'String',str,'FitBoxToText','on');
     
     % Store the figure contents in a variable

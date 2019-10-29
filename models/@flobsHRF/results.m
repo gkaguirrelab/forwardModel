@@ -39,7 +39,7 @@ results.meta.mapField = {'eigen1','eigen2','eigen3','R2'};
 results.meta.mapScale = {'blueRed','blueRed','blueRed','grayRed'};
 results.meta.mapLabel = {'eigen1 [au]','eigen2 [au]','eigen3 [au]','R2'};
 mu = obj.mu;
-sd2 = 2.*sum(obj.C);
+sd2 = 4.*sum(obj.C);
 
 results.meta.mapBounds = {[mu(1)-sd2(1) mu(1)+sd2(1)],[mu(2)-sd2(2) mu(2)+sd2(2)],[mu(3)-sd2(3) mu(3)+sd2(3)],[0 1]};
 

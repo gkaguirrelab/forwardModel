@@ -20,9 +20,11 @@ function [c, ceq] = nonlcon(obj, x)
 %   c, ceq                - Scalars.
 %
 
-% The gamma1 parameter should be smaller (earlier in time) than the gamma2
-% parameter
-c = [];
+% Keep the params within the 99% area of the multivariate normal
+% distribution
+pMVN = mvnpdf(x(1:3),obj.mu,obj.C)/100;
+
+c = 0.01 - pMVN;
 ceq = [];
 
 

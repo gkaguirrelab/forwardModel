@@ -20,20 +20,10 @@ function fVal = objective(obj, signal, x)
 %   fVal                  - Scalar.
 %
 
-% This df is a regularization to allow some value for improvement in the
-% correlation.
-df = 12;
 
-% The r^2 of the signal with the fit
-rsquared = calccorrelation(signal, obj.forward(x));
+% Implement R^2 objective
+fVal = 1-calccorrelation(signal, obj.forward(x))^2;
 
-% The probability of these parameters from the multivariate normal
-pPrior = mvnpdf(x(1:3),obj.mu,obj.C)/100;
-
-pPrior = sqrt(pPrior);
-
-% Implement an L2 norm
-fVal = 1-(rsquared*pPrior);
 
 end
 
