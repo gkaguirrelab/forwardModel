@@ -28,7 +28,7 @@ lb = nan(1,nParams);
 ub = nan(1,nParams);
 
 % The lower bounds
-lb(1) = -1;              % eigen1
+lb(1) = 0;              % eigen1
 lb(2) = -1;              % eigen2
 lb(3) = -1;              % eigen3
 

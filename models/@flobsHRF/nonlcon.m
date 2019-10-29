@@ -20,12 +20,14 @@ function [c, ceq] = nonlcon(obj, x)
 %   c, ceq                - Scalars.
 %
 
-% Keep the params within the 99% area of the multivariate normal
+% Keep the params within the 99.99% area of the multivariate normal
 % distribution
 pMVN = mvnpdf(x(1:3),obj.mu,obj.C)/100;
+c = 0.0001 - pMVN;
 
-c = 0.01 - pMVN;
-ceq = [];
+% The HRF form must be positive
+area = sum(obj.flobsbasis*x');
+ceq = double(~(area>0));
 
 
 
