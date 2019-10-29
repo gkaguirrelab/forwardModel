@@ -204,6 +204,7 @@ classdef gammaHRF < handle
         setbounds(obj)
         signal = clean(obj, signal)
         [c, ceq] = nonlcon(obj, x)
+        fVal = objective(obj, signal, x)
         [fit, hrf] = forward(obj, x)
         metric = metric(obj, signal, x)
         seeds = seeds(obj, data, vxs)

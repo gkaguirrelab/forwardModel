@@ -42,7 +42,10 @@ datats = data(vx,:)';
 datats = obj.clean(datats);
 
 % Obtain the model fit and hrf
-[modelts, hrf] = obj.forward(results.params(vxs(vx),:));
+modelts = obj.forward(results.params(vxs(vx),:));
+b = modelts\datats;
+modelts = modelts*b;
+hrf = obj.flobsbasis*results.params(vxs(vx),:)';
 
 % Plot the time series
 subplot(2,5,1:4)
@@ -67,7 +70,10 @@ datats = data(vx,:)';
 datats = obj.clean(datats);
 
 % Obtain the model fit and hrf
-[modelts, hrf] = obj.forward(results.params(vxs(vx),:));
+modelts = obj.forward(results.params(vxs(vx),:));
+b = modelts\datats;
+modelts = modelts*b;
+hrf = obj.flobsbasis*results.params(vxs(vx),:)';
 
 % Plot the time series
 subplot(2,5,6:9)
@@ -97,18 +103,24 @@ if length(vxs) < size(results.params,1)
     set(fig2,'PaperUnits','normalized');
     set(gcf,'Units','points','Position',[500 500 750 500]);
     
-    % Obtain the weighted mean parameters
+    % Obtain the weighted mean and SD parameters
     xMean = sum(results.params(vxs,:).*results.R2(vxs),1)./sum(results.R2(vxs));
-    [~, hrf] = model.forward(xMean);
-    
+    xSD = sqrt(var(results.params(vxs,:),results.R2(vxs),1));
+
     % Plot the HRF
+    hrf = obj.flobsbasis*xMean';
+
     plot(0:obj.stimDeltaT:(length(hrf)-1)*obj.stimDeltaT,hrf)
     xlabel('Time [seconds]');
     title('HRF from weighted mean parameters across voxels');
     
     % Add the parameters in a text box
     dim = [0.5 0.5 0.3 0.3];
-    str = sprintf('gamma1, gamma2, undershootGain = \n  [ %2.2f, %2.2f, %2.2f ]',xMean(1:3));
+    str = sprintf([...
+        '      [ eigen1, eigen2, eigen3 ]\n'...
+        'mean: [ %2.4f, %2.4f, %2.4f ]\n' ...
+        'SD:   [ %2.4f, %2.4f, %2.4f ]'], ...
+        xMean,xSD);
     annotation('textbox',dim,'String',str,'FitBoxToText','on');
     
     % Store the figure contents in a variable

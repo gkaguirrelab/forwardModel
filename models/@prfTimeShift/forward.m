@@ -72,21 +72,20 @@ obj.xLast = x;
 % x(5) exponent and then scaled by the gain parameter.
 neuralSignal =  x(4) * (gaussStim).^ x(5);
 
-% If the stimTime variable is not empty, resample the neuralSignal to match
-% the temporal support of the data.
-if ~isempty(stimTime)
-    neuralSignal = resamp2run(neuralSignal,stimAcqGroups,stimTime,dataAcqGroups,dataTime);
-end
-
 % Convolve the neural signal by the passed hrf, respecting the boundaries
 % betwen the acquisitions
-fit = conv2run(neuralSignal,hrf,dataAcqGroups);
+fit = conv2run(neuralSignal,hrf,stimAcqGroups);
 
 % Shift the fit by the number of seconds specified in x(6). The shift is
 % performed after convolution as the data will be smoother in time (and
-% thus subjected to less ringing artifact), and the operation will be
-% faster as there are fewer samples.
-fit = shift2run(fit,x(6)/dataDeltaT,dataAcqGroups);
+% thus subjected to less ringing artifact).
+fit = shift2run(fit,x(6)/stimDeltaT,stimAcqGroups);
+
+% If the stimTime variable is not empty, resample the fit to match
+% the temporal support of the data.
+if ~isempty(stimTime)
+    fit = resamp2run(fit,stimAcqGroups,stimTime,dataAcqGroups,dataTime);
+end
 
 % Apply the cleaning step
 fit = obj.clean(fit);

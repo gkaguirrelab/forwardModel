@@ -129,6 +129,9 @@ end
 
 % report completion of loop
 if verbose
+    if isdeployed
+        fprintf('\n');
+    end
     toc
     fprintf('\n');
 end

@@ -1,5 +1,5 @@
 function genhrf(obj)
-% Creates and stores an HRF using a double-gamma model
+% Creates and stores an HRF using the FLOBS eigenvectors
 %
 % Syntax:
 %   obj.genhrf
@@ -9,8 +9,7 @@ function genhrf(obj)
 %   so that it preserves signal area after convolution. The kernel is
 %   specified in a time x 1 vector orientation.
 %
-%   Typical values for the HRF parameters (which are in units of seconds)
-%   are [6 12 10 20].
+%   Typical values for the FLOBS weights are [0.86 0.09 0.01];
 %
 % Inputs:
 %   none
@@ -24,41 +23,20 @@ function genhrf(obj)
 
 
 % Obj variables
-dataDeltaT = obj.dataDeltaT;
+stimDeltaT = obj.dataDeltaT;
 hrfParams = obj.hrfParams;
 
-% Unpack hrfParams
-gamma1 = hrfParams(1);
-gamma2 = hrfParams(2);
-undershootGain = hrfParams(3);
-duration = hrfParams(4);
+% Obtain the FLOBS vectors
+flobsbasis = returnFlobsVectors(stimDeltaT);
 
-% Define an initial timebase for creation in 100 msec units
-genDeltaT = 0.1;
-timebase = 0:genDeltaT:duration;
+% Creat the HRF
+hrf = flobsbasis*hrfParams';
 
-% Create the double gamma function
+% Normalize the kernel to have unit area
+hrf = hrf/sum(abs(hrf));
 
-% Create the double gamma function
-g1 = gampdf(timebase,gamma1, 1);
-g1 = g1./ max(g1);
-g2 = gampdf(timebase, gamma2, 1);
-g2 = (g2/ max(g2)) * undershootGain;
-hrf = g1 - g2;
-
-% Set to zero at onset
-hrf = hrf - hrf(1);
-
-% Normalize the kernel to have unit area, accounting for the final temporal
-% resolution of the vector
-areaTimeScale = genDeltaT / dataDeltaT;
-hrf = hrf/(sum(abs(hrf)) * areaTimeScale);
-
-% Resample the HRF to the data timebase
-hrf = interp1(timebase, hrf, 0:dataDeltaT:ceil(duration/dataDeltaT),'linear',0);
-
-% Store the hrf in the object. Transpose the vector so that it is time x 1
-obj.hrf = hrf';
+% Store the hrf in the object.
+obj.hrf = hrf;
 
 end
 

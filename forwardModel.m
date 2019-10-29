@@ -308,7 +308,7 @@ parfor ii=1:length(vxs)
             nonlcon = @(x) model.nonlcon(xSort{bb}([x x0(fixSet)]));
             
             % Define an anonymous function as an objective
-            myObj = @(x) norm(datats - model.forward(xSort{bb}([x x0(fixSet)])));
+            myObj = @(x) model.objective(datats,(xSort{bb}([x x0(fixSet)])));
             
             % Call the non-linear fit function
             x = fmincon(myObj,x0(floatSet),[],[],[],[], ...
