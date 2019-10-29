@@ -170,8 +170,8 @@ classdef prfTimeShift < handle
             res = [size(stimulus{1},1) size(stimulus{1},2)];
             obj.res = res;
 
-            % Vectorize the stimuli. Create the stimAcqGroups
-            % variable. Concatenate and store in the object.
+            % Vectorize the stimuli. Create the stimAcqGroups variable.
+            % Concatenate and store in the object.
             for ii=1:length(stimulus)
                 stimulus{ii} = squish(stimulus{ii},2)';
                 stimAcqGroups{ii} = ii*ones(size(stimulus{ii},1),1);
@@ -196,8 +196,8 @@ classdef prfTimeShift < handle
                 % We have a stimTime variable.
                 stimTime = p.Results.stimTime;
                 % Make sure that all of the stimTime vectors are regularly
-                % sampled
-                regularityCheck = cellfun(@(x) length(unique(diff(x))),stimTime);
+                % sampled (within 3 decimal precision)
+                regularityCheck = cellfun(@(x) length(unique(round(diff(x),3))),stimTime);
                 if any(regularityCheck ~= 1)
                     error('forwardModelObj:timeMismatch','One or more stimTime vectors are not regularly sampled');
                 end
