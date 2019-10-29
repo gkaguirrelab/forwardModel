@@ -103,10 +103,14 @@ if length(vxs) < size(results.params,1)
     set(fig2,'PaperUnits','normalized');
     set(gcf,'Units','points','Position',[500 500 750 500]);
     
+    % Consider only those model fits that are not less likely than 1/1000,
+    % and have a reasonable fit to the data
+    goodIdx = logical((results.R2 > 0.2) .* (results.log10pMVN > log10(0.001)));
+    
     % Obtain the weighted median and SD parameters
     for ii = 1:obj.nParams
         [xMedian(ii),xSD(ii)] = ...
-            wtmedian(results.params(vxs,ii),results.R2(vxs));
+            wtmedian(results.params(goodIdx,ii),results.R2(goodIdx));
     end
     
     % Plot the HRF
@@ -114,7 +118,7 @@ if length(vxs) < size(results.params,1)
 
     plot(0:obj.stimDeltaT:(length(hrf)-1)*obj.stimDeltaT,hrf)
     xlabel('Time [seconds]');
-    title('HRF from weighted mean parameters across voxels');
+    title('HRF from weighted median parameters across reasonable voxels');
     
     % Add the parameters in a text box
     dim = [0.5 0.5 0.3 0.3];

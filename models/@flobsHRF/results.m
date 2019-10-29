@@ -30,18 +30,22 @@ results.eigen2 =        params(:,2);
 results.eigen3 =        params(:,3);
 results.R2 =            metric;
 
+% Calculate the point-PDF for the parameters given the mu and covariance
+% matrix for the FLOBS eigenvectors
+results.log10pMVN = log10(mvnpdf(params,obj.mu,obj.C)/100);
+
 % Add the params themselves
 results.params =        params;
 
 % Identify the color scale to be used for plotting the different components
 % Identify the color scale to be used for plotting the different components
-results.meta.mapField = {'eigen1','eigen2','eigen3','R2'};
-results.meta.mapScale = {'blueRed','blueRed','blueRed','grayRed'};
-results.meta.mapLabel = {'eigen1 [au]','eigen2 [au]','eigen3 [au]','R2'};
+results.meta.mapField = {'eigen1','eigen2','eigen3','R2','log10pMVN'};
+results.meta.mapScale = {'blueRed','blueRed','blueRed','grayRed','grayRed'};
+results.meta.mapLabel = {'eigen1 [au]','eigen2 [au]','eigen3 [au]','R2','log10pMVN'};
 mu = obj.mu;
-sd4 = 4.*sum(obj.C);
+sd5 = 5.*sum(obj.C);
 
-results.meta.mapBounds = {[mu(1)-sd4(1) mu(1)+sd4(1)],[mu(2)-sd4(2) mu(2)+sd4(2)],[mu(3)-sd4(3) mu(3)+sd4(3)],[0 1]};
+results.meta.mapBounds = {[mu(1)-sd5(1) mu(1)+sd5(1)],[mu(2)-sd5(2) mu(2)+sd5(2)],[mu(3)-sd5(3) mu(3)+sd5(3)],[0 1],[-4 0]};
 
 
 end
