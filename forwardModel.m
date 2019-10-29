@@ -44,7 +44,7 @@ function results = forwardModel(data,stimulus,tr,varargin)
 % Optional key/value pairs:
 %  'modelClass'           - Char vector. The name of one of the available
 %                           model objects. Choices include:
-%                             {'pRF','pRF_timeShift'}
+%                             {'prfTimeShift','flobsHRF','gammaHRF'}
 %  'modelOpts'            - A cell array of key-value pairs that are passed
 %                           to the model object at that time of object
 %                           creation. For example:
