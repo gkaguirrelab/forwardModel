@@ -47,7 +47,7 @@ x0(1) = (1+res(1))/2;               % xPosition
 x0(2) = (1+res(2))/2;               % yPosition
 x0(3) = max(res)/4*sqrt(0.5)/scaler;   % sigma
 x0(4) = typicalGain;                % typical gain (amplitude)
-x0(5) = 0.05;                       % compressive exponent
+x0(5) = 0.15;                       % compressive exponent
 x0(6) = 0;                          % HRF temporal shift (in TRs)
 
 end
