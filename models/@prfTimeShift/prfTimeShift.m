@@ -34,9 +34,6 @@ classdef prfTimeShift < handle
         xx
         yy
         
-        % A time x 1 vector that defines the HRF convolution kernel
-        hrf
-        
         % The projection matrix used to regress our nuisance effects
         T
         
@@ -47,9 +44,8 @@ classdef prfTimeShift < handle
         xLast
     end
     
-    % Fixed after object creation
+    % Calling function can see, but not modify
     properties (SetAccess=private)
-
         
         % A vector of the length totalTRs x 1 that has an index value to
         % indicate which acquisition (1, 2, 3 ...) a data time
@@ -88,7 +84,10 @@ classdef prfTimeShift < handle
         
         % A cell array that contains things that the model might want
         payload
-                
+
+        % A time x 1 vector that defines the HRF convolution kernel
+        hrf        
+
     end
     
     % These may be modified after object creation
