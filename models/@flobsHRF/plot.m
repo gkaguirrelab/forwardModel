@@ -65,6 +65,9 @@ title('HRF');
 % Now pick the voxel with the median model fit
 vx=find( results.R2(vxs)==nanmedian(results.R2(vxs)) );
 
+% Just in case there is more than one value that matches the median
+vx = vx(1);
+
 % Grab a time series
 datats = data(vx,:)';
 datats = obj.clean(datats);
