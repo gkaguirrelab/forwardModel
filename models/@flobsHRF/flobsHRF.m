@@ -190,12 +190,12 @@ classdef flobsHRF < handle
             obj.typicalGain = p.Results.typicalGain;
             obj.verbose = p.Results.verbose;
 
+            % Create and cache the flobs basis
+            obj.genflobsbasis;           
+
             % Set the bounds and minParamDelta
             obj.setbounds;
 
-            % Create and cache the flobs basis
-            obj.genflobsbasis;           
-            
             % Create and cache the projection matrix
             obj.genprojection;
                         

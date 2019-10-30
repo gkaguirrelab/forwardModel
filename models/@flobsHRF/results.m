@@ -43,9 +43,9 @@ results.meta.mapField = {'eigen1','eigen2','eigen3','R2','log10pMVN'};
 results.meta.mapScale = {'blueRed','blueRed','blueRed','grayRed','grayRed'};
 results.meta.mapLabel = {'eigen1 [au]','eigen2 [au]','eigen3 [au]','R2','log10pMVN'};
 mu = obj.mu;
-sd5 = 5.*sum(obj.C);
+sd15 = 15*diag(obj.C)';
 
-results.meta.mapBounds = {[mu(1)-sd5(1) mu(1)+sd5(1)],[mu(2)-sd5(2) mu(2)+sd5(2)],[mu(3)-sd5(3) mu(3)+sd5(3)],[0 1],[-4 0]};
+results.meta.mapBounds = {[mu(1)-sd15(1) mu(1)+sd15(1)],[mu(2)-sd15(2) mu(2)+sd15(2)],[mu(3)-sd15(3) mu(3)+sd15(3)],[0 1],[-7 0]};
 
 
 end

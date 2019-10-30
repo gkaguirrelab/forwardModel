@@ -22,20 +22,21 @@ function setbounds(obj)
 
 % Obj variables
 nParams = obj.nParams;
+mu = obj.mu;
+C = obj.C;
+
+% Set bounds at +-10SDs of the norm distributions of the FLOBS parameters
+sd15 = 15*diag(C)';
 
 % Define outputs
 lb = nan(1,nParams);
 ub = nan(1,nParams);
 
 % The lower bounds
-lb(1) = 0;              % eigen1
-lb(2) = -1;              % eigen2
-lb(3) = -1;              % eigen3
+lb(:) = mu-sd15;    % eigen1, eigen2, eigen3
 
 % The upper bounds
-ub(1) = 1;              % eigen1
-ub(2) = 1;              % eigen2
-ub(3) = 1;              % eigen3
+ub(:) = mu+sd15;    % eigen1, eigen2, eigen3
 
 % Store the bounds in the object
 obj.lb = lb;

@@ -95,17 +95,18 @@ results.figures.fig1 = returnFigVar(fig1);
 results.figures.fig1.format = '-dpdf';
 
 
-%% Figure 2 -- Weighted mean HRF
-% Only create this if VXS is a subset of the total data,
+% Only create these if VXS is a subset of the total data,
 if length(vxs) < size(results.params,1)
+
+    
+    %% Figure 2 -- Weighted mean HRF
     fig2 = figure('visible','off');
     set(fig2,'PaperOrientation','landscape');
     set(fig2,'PaperUnits','normalized');
     set(gcf,'Units','points','Position',[500 500 750 500]);
     
-    % Consider only those model fits that are not less likely than 1/1000,
-    % and have a reasonable fit to the data
-    goodIdx = logical((results.R2 > 0.2) .* (results.log10pMVN > log10(0.001)));
+    % Consider only those model fits that have a reasonable fit to the data
+    goodIdx = logical((results.R2 > 0.2) .* (results.log10pMVN > -6.5));
     
     % Obtain the weighted median and SD parameters
     for ii = 1:obj.nParams
@@ -125,13 +126,34 @@ if length(vxs) < size(results.params,1)
     str = sprintf([...
         '        [ eigen1, eigen2, eigen3 ]\n'...
         'median: [ %2.4f, %2.4f, %2.4f ]\n' ...
-        'SD:     [ %2.4f, %2.4f, %2.4f ]'], ...
-        xMedian,xSD);
-    annotation('textbox',dim,'String',str,'FitBoxToText','on');
+        'SD:     [ %2.4f, %2.4f, %2.4f ]\n', ...
+        'n = %d voxels/vertices'], ...
+        xMedian,xSD,sum(goodIdx));
+    annotation('textbox',dim,'String',str,'FitBoxToText','on', ...
+        'FontName','FixedWidth','HorizontalAlignment','left');
     
     % Store the figure contents in a variable
     results.figures.fig2 = returnFigVar(fig2);
     results.figures.fig2.format = '-dpdf';
+
+    %% Figure 3 -- Distribution of eigenvalues
+    fig3 = figure('visible','on');
+    set(fig3,'PaperOrientation','landscape');
+    set(fig3,'PaperUnits','normalized');
+    set(gcf,'Units','points','Position',[500 500 750 500]);
+    
+    % Plot the cloud of values
+    plot3(results.eigen1(goodIdx),results.eigen2(goodIdx),results.eigen3(goodIdx),'.k');
+    hold on
+
+    % Add the median
+    plot3(xMedian(1),xMedian(2),xMedian(3),'or');
+    
+    xlabel('eigen 1'); ylabel('eigen 2');zlabel('eigen 3');
+
+    % Store the figure contents in a variable
+    results.figures.fig3 = returnFigVar(fig3);
+    results.figures.fig3.format = '-dpdf';
 
 end
 

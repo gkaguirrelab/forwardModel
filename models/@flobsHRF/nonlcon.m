@@ -20,10 +20,14 @@ function [c, ceq] = nonlcon(obj, x)
 %   c, ceq                - Scalars.
 %
 
-% Keep the params within the 99.99% area of the multivariate normal
-% distribution
-pMVN = mvnpdf(x(1:3),obj.mu,obj.C)/100;
-c = 0.0001 - pMVN;
+% Keep the params within the multivariate normal distribution, but with
+% very generous probability bounds (e.g., accept a voxel with a fit that
+% has a 10^-7 value in the multivariate normal PDF. This is because we view
+% the parameters on the MVN to be somewhat idiosyncratic to the temporal
+% profile and scanning parameters used in the acquisition of the canonical
+% FLOBS data.
+pMVN = mvnpdf(x,obj.mu,obj.C)/100;
+c = -log10(pMVN)-7;
 
 % The HRF form must be positive
 area = sum(obj.flobsbasis*x');
