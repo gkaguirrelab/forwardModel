@@ -187,18 +187,9 @@ classdef gammaHRF < handle
                         
         end
         
-        % Set methods
-
-        function set.polyDeg(obj, value)
-            obj.polyDeg = value;
-            obj.genprojection;
-        end
-        
-        % Methods
+        % Required methds -- The forwardModel function expects these
         rawData = prep(obj,rawData)
-        genprojection(obj)
         x0 = initial(obj)
-        setbounds(obj)
         signal = clean(obj, signal)
         [c, ceq] = nonlcon(obj, x)
         fVal = objective(obj, signal, x)
@@ -206,6 +197,18 @@ classdef gammaHRF < handle
         metric = metric(obj, signal, x)
         seeds = seeds(obj, data, vxs)
         results = results(obj, params, metric)
-        results = plot(obj, data, results)
+        results = plot(obj, data, results)        
+
+        % Internal methods
+        setbounds(obj)
+        genprojection(obj)
+        
+        % Set methods -- Changes to these method properties evoke these
+        % actions
+        function set.polyDeg(obj, value)
+            obj.polyDeg = value;
+            obj.genprojection;
+        end
+        
     end
 end

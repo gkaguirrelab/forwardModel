@@ -252,6 +252,23 @@ classdef prfTimeShift < handle
             
         end
         
+        % Required methds -- The forwardModel function expects these
+        rawData = prep(obj,rawData)
+        x0 = initial(obj)
+        signal = clean(obj, signal)
+        [c, ceq] = nonlcon(obj, x)
+        fVal = objective(obj, signal, x)
+        fit = forward(obj, x)
+        metric = metric(obj, signal, x)
+        seeds = seeds(obj, data, vxs)
+        results = results(obj, params, metric)
+        results = plot(obj, data, results)           
+        
+        % Internal methods
+        setbounds(obj)
+        genprojection(obj)
+        genhrf(obj)
+        
         % Set methods
         function set.hrfParams(obj, value)
             obj.hrfParams = value;
@@ -263,18 +280,5 @@ classdef prfTimeShift < handle
             obj.genprojection;
         end
         
-        % Methods
-        rawData = prep(obj,rawData)
-        genprojection(obj)
-        x0 = initial(obj)
-        setbounds(obj)
-        signal = clean(obj, signal)
-        [c, ceq] = nonlcon(obj, x)
-        fVal = objective(obj, signal, x)
-        fit = forward(obj, x)
-        metric = metric(obj, signal, x)
-        seeds = seeds(obj, data, vxs)
-        results = results(obj, params, metric)
-        results = plot(obj, data, results)
     end
 end
