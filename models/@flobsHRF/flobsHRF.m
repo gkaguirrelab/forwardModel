@@ -21,15 +21,16 @@ classdef flobsHRF < handle
         % The FLOBS eigenvectors 
         flobsbasis
 
-        % The stimulus convolved by each of the eigenvectors
-        flobsStim
-
         % The multivariate normal means of the 3 eigenvectors
         mu
         
         % The multivariate normal covariance matrix
         C
-        
+
+        % The stimulus convolved by each of the eigenvectors
+        flobsStim
+
+
         % The projection matrix used to regress our nuisance effects
         T
 
@@ -214,6 +215,7 @@ classdef flobsHRF < handle
         results = plot(obj, data, results)        
 
         % Internal methods
+        genflobsbasis(obj);
         setbounds(obj)
         genprojection(obj)
         
