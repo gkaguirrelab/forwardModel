@@ -63,6 +63,9 @@ function results = forwardModel(data,stimulus,tr,varargin)
 %  'vxs'                  - Vector. A list of vertices/voxels to be
 %                           processed. If not specified, all rows of the
 %                           data matrix will be analyzed.
+%  'averageVoxels'        - Logical. If set to true, all time series (or 
+%                           the subset specified by vxs) are averaged prior
+%                           to model fitting.
 %  'silenceWarnings'      - Logical. Silences warnings regarding imperfect
 %                           model fitting.
 %  'verbose'              - Logical.
@@ -221,6 +224,8 @@ if p.Results.averageVoxels
         averagets = mean(data{ii}(vxs(nonZeroVxs),:),1);
         data{ii}(vxs,:)=repmat(averagets,length(vxs),1);
     end
+    % Retain the full set of vxs
+    fullVxs = vxs;
     vxs = vxs(1);
 end
 
@@ -359,6 +364,14 @@ end
 % level since warnings were silenced within the worker pool, but restoring
 % here to be safe.
 warning(warningState);
+
+% Handle averageVoxels
+if p.Results.averageVoxels
+    % Expand the params and metric out to all of vxs
+    parParams = repmat(parParams,length(fullVxs),1);
+    parMetric = repmat(parMetric,length(fullVxs),1);
+    vxs = fullVxs;
+end
 
 % Map the par variables into full variables
 params = nan(totalVxs,model.nParams);
