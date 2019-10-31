@@ -75,59 +75,8 @@ function results = forwardModel(data,stimulus,tr,varargin)
 %                           results method in each model.
 %
 % Examples:
-%{
-    % Create a stimulus with 1 second temporal resolution
-    stimulus = [];
-    stimulus{1}(1,1,:) = repmat([zeros(1,12) ones(1,12)],1,8);
-
-    % Instantiate the "gammaHRF" model
-    tr = 1;
-    dummyData = [];
-    dummyData{1}(1,:) = repmat([zeros(1,12) ones(1,12)],1,8);
-    model = gammaHRF(dummyData,stimulus,tr);
-
-    % Create simulated data with the default params, and add some noise
-    datats = model.forward(model.initial);
-    datats = datats + randn(size(datats))*range(datats)/5;
-    data = []
-    data{1}(1,:) = datats;
-
-    % Call the forwardModel
-    results = forwardModel(data,stimulus,tr,'modelClass','gammaHRF');
-
-    % Plot the data and the fit
-    figure
-    plot(datats);
-    hold on
-    plot(model.forward(results.params));
-%}
-%{
-    % Create a stimulus with 0.5 second temporal resolution
-    stimulus = [];
-    stimulus{1}(1,1,:) = repmat([zeros(1,24) ones(1,24)],1,8);
-    stimTime{1} = 0:0.5:(size(stimulus{1},3)-1)*0.5;
-
-    % Instantiate the "prfTimeShift" model
-    tr = 1;
-    dummyData = [];
-    dummyData{1}(1,:) = repmat([zeros(1,12) ones(1,12)],1,8);
-    model = prfTimeShift(dummyData,stimulus,tr,'stimTime',stimTime);
-
-    % Create simulated data with the default params, and add some noise
-    datats = model.forward(model.initial);
-    datats = datats + randn(size(datats))*(model.typicalGain/5);
-    data = []
-    data{1}(1,:) = datats;
-
-    % Call the forwardModel
-    results = forwardModel(data,stimulus,tr,'modelClass','prfTimeShift','stimTime',stimTime);
-
-    % Plot the data and the fit
-    figure
-    plot(datats);
-    hold on
-    plot(model.forward(results.params));
-%}
+%   See the "demo.m" files within each model
+%
 
 
 %% input parser

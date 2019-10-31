@@ -1,10 +1,15 @@
-% Information and demonstration for the eventGain model
+%% eventGain
 %
+% This model simulataneously estimates the gain (amplitude) of events
+% described in the stimulus matrix, and the three parameters of a FLOBS HRF
+% convolution step.
 %
+% A typical application would be an fMRI experiment with multiple stimulus
+% events or blocks.
 
 
-% Create a stimulus with 0.8 second temporal resolution that is a 12
-% second step function
+% Create a stimulus with 0.8 second temporal resolution that is a 12 second
+% step function
 step = zeros(1,420);
 step(1:15)=1;
 
@@ -14,7 +19,7 @@ for ii=1:14
     stimulus(ii,:) = fshift(step,30*(ii-1));
 end
 
-% Put the matrix within a cell
+% Put the stimulus matrix within a cell
 stimulus = {stimulus};
 
 % Instantiate the model
@@ -34,7 +39,22 @@ data{1}(1,:) = datats;
 % Call the forwardModel
 results = forwardModel(data,stimulus,tr,'modelClass','eventGain');
 
-% Plot the data and the fit
-figHandle = struct2handle(results.figures.fig1.hgS_070000,0,'convert');
-set(figHandle,'visible','on')
+% Plot the simulated vs. recovered parameters
+figure
+plot(x(1:14),results.params(1:14),'xr');
+xlim([0 500]);
+ylim([0 500]);
+xlabel('simulated')
+ylabel('recovered')
+axis square
+refline(1,0);
+
+% Show the results figures
+figFields = fieldnames(results.figures);
+if ~isempty(figFields)
+    for ii = 1:length(figFields)
+        figHandle = struct2handle(results.figures.(figFields{ii}).hgS_070000,0,'convert');
+        set(figHandle,'visible','on')
+    end
+end
 

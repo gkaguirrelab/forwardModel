@@ -30,7 +30,7 @@ vxs = results.meta.vxs;          % vector of analyzed vertices / voxels
 fig1 = figure('visible','off');
 set(fig1,'PaperOrientation','landscape');
 set(fig1,'PaperUnits','normalized');
-set(gcf,'Units','points','Position',[500 500 750 500]);
+set(gcf,'Units','points','Position',[500 500 750 250]);
 
 % Pick the voxel with the best model fit
 [~,vx]=nanmax(results.R2(vxs));
@@ -43,7 +43,7 @@ datats = obj.clean(datats);
 [modelts, hrf] = obj.forward(results.params(vxs(vx),:));
 
 % Plot the time series
-subplot(2,5,1:4)
+subplot(1,5,1:4)
 plot(obj.dataTime,datats,'r-');
 hold on;
 plot(obj.dataTime,modelts,'b-');
@@ -52,7 +52,7 @@ ylabel('BOLD signal');
 title(['Best fit time-series, CIFTI vertex ' num2str(vxs(vx))]);
 
 % Plot the HRF
-subplot(2,5,5)
+subplot(1,5,5)
 plot(0:obj.dataDeltaT:(length(hrf)-1)*obj.dataDeltaT,hrf)
 xlabel('Time [seconds]');
 title('HRF');

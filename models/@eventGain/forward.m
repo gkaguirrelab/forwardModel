@@ -34,6 +34,9 @@ neuralSignal = stimulus*x(1:nParams-3)';
 % Create the HRF
 hrf = flobsbasis*x(nParams-2:nParams)';
 
+% Normalize the kernel to have unit area
+hrf = hrf/sum(abs(hrf));
+
 % Convolve the neuralSignal by the hrf, respecting acquisition boundaries
 fit = conv2run(neuralSignal,hrf,stimAcqGroups);
 
