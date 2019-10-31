@@ -1,4 +1,4 @@
-function fVal = objective(~, signal, x)
+function fVal = objective(obj, signal, x)
 % Evaluates the match between a signal and a model fit
 %
 % Syntax:
@@ -21,7 +21,7 @@ function fVal = objective(~, signal, x)
 %
 
 % Implement an L2 norm
-fVal = norm(signal - model.forward(x));
+fVal = norm(signal - obj.forward(x));
 
 end
 

@@ -107,20 +107,8 @@ if length(vxs) < size(results.params,1)
     set(fig2,'PaperOrientation','landscape');
     set(fig2,'PaperUnits','normalized');
     set(gcf,'Units','points','Position',[500 500 750 500]);
-    
-    % Consider only those model fits that have a reasonable fit to the data
-    goodIdx = logical((results.R2 > 0.2) .* (results.log10pMVN > -6.5));
-    
-    % Obtain the weighted median and SD parameters
-    for ii = 1:obj.nParams
-        [xMedian(ii),xSD(ii)] = ...
-            wtmedian(results.params(goodIdx,ii),results.R2(goodIdx));
-    end
-    
-    % Plot the HRF
-    hrf = obj.flobsbasis*xMedian';
 
-    plot(0:obj.stimDeltaT:(length(hrf)-1)*obj.stimDeltaT,hrf)
+    plot(0:obj.stimDeltaT:(length(results.summary.hrf)-1)*obj.stimDeltaT,results.summary.hrf)
     xlabel('Time [seconds]');
     title('HRF from weighted median parameters across reasonable voxels');
     
@@ -131,7 +119,7 @@ if length(vxs) < size(results.params,1)
         'median: [ %2.4f, %2.4f, %2.4f ]\n' ...
         'SD:     [ %2.4f, %2.4f, %2.4f ]\n', ...
         'n = %d voxels/vertices'], ...
-        xMedian,xSD,sum(goodIdx));
+        results.summary.medianParams,results.summary.sdMedianParams,sum(results.summary.reasonableIdx));
     annotation('textbox',dim,'String',str,'FitBoxToText','on', ...
         'FontName','FixedWidth','HorizontalAlignment','left');
     
@@ -140,18 +128,21 @@ if length(vxs) < size(results.params,1)
     results.figures.fig2.format = '-dpdf';
 
     %% Figure 3 -- Distribution of eigenvalues
-    fig3 = figure('visible','on');
+    fig3 = figure('visible','off');
     set(fig3,'PaperOrientation','landscape');
     set(fig3,'PaperUnits','normalized');
     set(gcf,'Units','points','Position',[500 500 750 500]);
     
     % Plot the cloud of values
-    plot3(results.eigen1(goodIdx),results.eigen2(goodIdx),results.eigen3(goodIdx),'.k');
+    plot3(results.eigen1(results.summary.reasonableIdx),...
+        results.eigen2(results.summary.reasonableIdx),...
+        results.eigen3(results.summary.reasonableIdx),'.k');
     hold on
 
     % Add the median
-    plot3(xMedian(1),xMedian(2),xMedian(3),'or');
-    
+    h = plot3(results.summary.medianParams(1),results.summary.medianParams(2),results.summary.medianParams(3),'or','MarkerSize',10);
+    set(h, 'MarkerFaceColor','r'); 
+    grid
     xlabel('eigen 1'); ylabel('eigen 2');zlabel('eigen 3');
 
     % Store the figure contents in a variable
