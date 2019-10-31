@@ -77,20 +77,20 @@ function results = forwardModel(data,stimulus,tr,varargin)
     stimulus = [];
     stimulus{1}(1,1,:) = repmat([zeros(1,12) ones(1,12)],1,8);
 
-    % Instantiate the "prfTimeShift" model
+    % Instantiate the "gammaHRF" model
     tr = 1;
     dummyData = [];
     dummyData{1}(1,:) = repmat([zeros(1,12) ones(1,12)],1,8);
-    model = prfTimeShift(dummyData,stimulus,tr);
+    model = gammaHRF(dummyData,stimulus,tr);
 
     % Create simulated data with the default params, and add some noise
     datats = model.forward(model.initial);
-    datats = datats + randn(size(datats))*(model.typicalGain/5);
+    datats = datats + randn(size(datats))*range(datats)/5;
     data = []
     data{1}(1,:) = datats;
 
     % Call the forwardModel
-    results = forwardModel(data,stimulus,tr,'modelClass','prfTimeShift');
+    results = forwardModel(data,stimulus,tr,'modelClass','gammaHRF');
 
     % Plot the data and the fit
     figure
@@ -140,7 +140,7 @@ p.addParameter('modelOpts',{},@iscell);
 p.addParameter('modelPayload',{},@iscell);
 p.addParameter('stimTime',{},@(x)(iscell(x) || ismatrix(x)));
 p.addParameter('vxs',[],@isvector);
-p.addParameter('maxIter',500,@isscalar);
+p.addParameter('averageVoxels',false,@islogical);
 p.addParameter('silenceWarnings',true,@islogical);
 p.addParameter('verbose',true,@islogical);
 
@@ -210,6 +210,19 @@ model.verbose = verbose;
 
 % Prep the raw data
 data = model.prep(data);
+
+% Handle averageVoxels
+if p.Results.averageVoxels
+    % In each acquisition, create the average time series across the vxs
+    % voxels, skipping those voxels that have been set to have uniform zero
+    % values by the prep stage
+    for ii = 1:length(data)
+        nonZeroVxs = ~all(data{ii}(vxs,:)==0,2);
+        averagets = mean(data{ii}(vxs(nonZeroVxs),:),1);
+        data{ii}(vxs,:)=repmat(averagets,length(vxs),1);
+    end
+    vxs = vxs(1);
+end
 
 % Generate seeds
 seeds = model.seeds(data,vxs);
