@@ -60,7 +60,10 @@ xlabel('Time [seconds]');
 title('HRF');
 
 % Now pick the voxel with the median model fit
-vx=find( results.R2(vxs)==nanmedian(results.R2(vxs)) );
+medianR2 = nanmedian(results.R2(vxs));
+
+% Find the vertex that has an R^2 closest to the median
+[~,vx] = min( abs(results.R2(vxs) - medianR2));
 
 % Grab a time series
 datats = data(vx,:)';
