@@ -218,12 +218,22 @@ if verbose
         fprintf(['Fitting model over ' num2str(nVxs) ' vertices.\n']);
     end
     
+    % If this is deployed code, update the progress once every 5 minutes,
+    % as the progress bar updates accumulate in the log
+    if isdeployed
+        UpdateRate = 1/300;
+        fprintf(['Updates every ' num2str(1/UpdateRate) ' seconds./n']);
+    else
+        UpdateRate = 5;
+    end
+    
     % Instantiate the progress bar object with the 'Parallel' switch set to
-    % true and save the aux. files in the current working directory (pwd)
+    % true and save the aux files in the current working directory (pwd)
     pbarObj = ProgressBar(nVxs, ...
         'IsParallel', true, ...
         'WorkerDirectory', pwd, ...
-        'Title', p.Results.modelClass ...
+        'Title', p.Results.modelClass, ...
+        'UpdateRate', UpdateRate ...
         );
     pbarObj.setup([], [], []);
     
@@ -248,14 +258,7 @@ parfor ii=1:nVxs
 
     % Update progress bar
     if verbose
-        if isdeployed
-            if mod(ii,round(nVxs/20))==0
-                fprintf('\n');
-                updateParallel(20, pwd);
-            end
-        else
-            updateParallel([], pwd);
-        end
+        updateParallel([], pwd);
     end
     
     % Get the time series for the selected voxel/vertex, transpose to a
