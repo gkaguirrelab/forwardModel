@@ -184,6 +184,8 @@ seeds = model.seeds(data,vxs);
 
 %% Fit the data
 
+nVxs = length(vxs);
+
 % Convert the data into a single, concatenated matrix of [totalVxs time]
 data = catcell(1,data);
 
@@ -210,15 +212,15 @@ lb = model.lb; ub = model.ub;
 
 % Alert the user
 if verbose
-    if length(vxs)==1
+    if nVxs==1
         fprintf(['Fitting model over one vertex.\n']);
     else
-        fprintf(['Fitting model over ' num2str(length(vxs)) ' vertices.\n']);
+        fprintf(['Fitting model over ' num2str(nVxs) ' vertices.\n']);
     end
     
     % Instantiate the progress bar object with the 'Parallel' switch set to
     % true and save the aux. files in the current working directory (pwd)
-    pbarObj = ProgressBar(length(vxs), ...
+    pbarObj = ProgressBar(nVxs, ...
         'IsParallel', true, ...
         'WorkerDirectory', pwd, ...
         'Title', p.Results.modelClass ...
@@ -234,7 +236,7 @@ end
 warningState = warning;
 
 % Loop through the voxels/vertices in vxs
-parfor ii=1:length(vxs)
+parfor ii=1:nVxs
     
     % Silence warnings if so instructed. This must be done inside the par
     % loop to apply to each worker.
@@ -246,7 +248,14 @@ parfor ii=1:length(vxs)
 
     % Update progress bar
     if verbose
-        updateParallel([], pwd);
+        if isdeployed
+            if mod(ii,round(nVxs/20))==0
+                fprintf('\n');
+                updateParallel(20, pwd);
+            end
+        else
+            updateParallel([], pwd);
+        end
     end
     
     % Get the time series for the selected voxel/vertex, transpose to a
