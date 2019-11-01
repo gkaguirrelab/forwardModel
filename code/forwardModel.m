@@ -210,19 +210,25 @@ lb = model.lb; ub = model.ub;
 
 % Alert the user
 if verbose
-    tic
     if length(vxs)==1
-        fprintf(['Fitting model over one vertex:\n']);
+        fprintf(['Fitting model over one vertex.\n']);
     else
-        fprintf(['Fitting model over ' num2str(length(vxs)) ' vertices:\n']);
+        fprintf(['Fitting model over ' num2str(length(vxs)) ' vertices.\n']);
     end
-    fprintf('| 0                      50                   100%% |\n');
-    if isdeployed
-        fprintf('.');
-    else
-        fprintf('.\n');
-    end
+    
+    % Instantiate the progress bar object with the 'Parallel' switch set to
+    % true and save the aux. files in the current working directory (pwd)
+    pbarObj = ProgressBar(length(vxs), ...
+        'IsParallel', true, ...
+        'WorkerDirectory', pwd, ...
+        'Title', p.Results.modelClass ...
+        );
+    pbarObj.setup([], [], []);
+    
+    % Start a timer
+    tic
 end
+
 
 % Store the warning state
 warningState = warning;
@@ -239,12 +245,8 @@ parfor ii=1:length(vxs)
     end
 
     % Update progress bar
-    if verbose && mod(ii,round(length(vxs)/50))==0
-        if isdeployed
-            fprintf('.');
-        else
-            fprintf('\b.\n');
-        end
+    if verbose
+        updateParallel([], pwd);
     end
     
     % Get the time series for the selected voxel/vertex, transpose to a
@@ -300,11 +302,10 @@ parfor ii=1:length(vxs)
     
 end
 
+
 % Report completion of loop
 if verbose
-    if isdeployed
-        fprintf('\n');
-    end
+    pbarObj.release();
     toc
     fprintf('\n');
 end

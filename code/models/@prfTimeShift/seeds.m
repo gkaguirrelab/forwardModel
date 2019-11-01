@@ -98,13 +98,7 @@ end
 % Alert the user
 if verbose
     tic
-    fprintf(['Generating ' num2str(size(allseeds,1)) ' seeds:\n']);
-    fprintf('| 0                      50                   100%% |\n');
-    if isdeployed
-        fprintf('.');
-    else
-        fprintf('.\n');
-    end
+    fprintf(['Generating ' num2str(size(allseeds,1)) ' seeds.\n']);
 end
 
 % Create a function handle to avoid broadcasting the model obj
@@ -113,15 +107,6 @@ forward = @(p) obj.forward(p);
 % Loop over all seeds and generate the predicted time series
 parfor ii = 1:size(allseeds,1)
 
-    % Update progress bar
-    if verbose && mod(ii,round(size(allseeds,1)/50))==0
-        if isdeployed
-            fprintf('.');
-        else
-            fprintf('\b.\n');
-        end
-    end
-
     % Evaluate the forward model
     predts(:,ii) = forward(allseeds(ii,:));
     
@@ -129,9 +114,6 @@ end
 
 % report completion of loop
 if verbose
-    if isdeployed
-        fprintf('\n');
-    end
     toc
     fprintf('\n');
 end
