@@ -1,7 +1,11 @@
 %% flobsHRF
 %
-% This model simulataneously estimates the shape of the HRF using a basis
-% set of HRF eigenvectors (the FLOBS basis set).
+% This model estimates the shape of the HRF using a basis set of HRF
+% eigenvectors (FMRIB's Linear Optimal Basis Set, or "FLOBS"):
+%
+%	M.W. Woolrich, T.E.J. Behrens, and S.M. Smith. Constrained linear
+%	basis sets for HRF modelling using Variational Bayes. NeuroImage,
+%   21:4(1748-1761) 2004.
 %
 % A typical application would be to derive the HRF from a set of fMRI data
 % that had two stimulus conditions (off an on), arranged in some temporal
