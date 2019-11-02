@@ -28,7 +28,8 @@ function results = plot(obj, data, results)
 vxs = results.meta.vxs;          % vector of analyzed vertices / voxels
 fitThresh = 0.2;
 
-%% Figure 1
+
+%% Figure 1 -- example time series
 
 % Setup a figure
 fig1 = figure('visible','off');
@@ -97,7 +98,7 @@ results.figures.fig1.format = '-dpdf';
 
 
 
-%% Figure 2
+%% Figure 2 - visual field coverage
 
 % Obj variables
 res = obj.res;
@@ -141,6 +142,14 @@ set(gca, 'Units', currentunits);
 % Calculate Marker width in points for a 2SD RF
 markerWidth = (2.*results.sigma(goodIdx))./diff(xlim)*axpos(3); 
 set(h, 'SizeData', markerWidth.^2)
+
+% Get the axes on top of the markers
+xl = get(gca,'XLim');
+yl = get(gca,'YLim');
+set(gca,'XLim',xl);
+set(gca,'YLim',yl);
+set(gca,'box','on')
+set(gca,'Layer','top')
 
 % Store the figure contents in a variable
 results.figures.fig2 = returnFigVar(fig2);
