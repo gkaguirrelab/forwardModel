@@ -20,9 +20,8 @@ function results = forwardModel(data,stimulus,tr,varargin)
 %   directory. The behavior of the model may be controlled by passing
 %   modelOpts, and by passing additional materials in the modelPayload.
 %
-%   This framework is inspred by, and many of the underlying utility
-%   functions taken from, Kendrick Kay's analyzePRF toolbox:
-%       https://github.com/kendrickkay/analyzePRF
+%   This framework uses several utility functions from Kendrick Kay's
+%   analyzePRF toolbox: https://github.com/kendrickkay/analyzePRF
 %
 % Inputs:
 %   data                  - A matrix [v t] or cell array of such
@@ -42,6 +41,14 @@ function results = forwardModel(data,stimulus,tr,varargin)
 %   tr                    - Scalar. The TR of the fMRI data in seconds.
 %
 % Optional key/value pairs:
+%  'stimTime'             - [1 st] vector or cell array of such vectors
+%                           provides the temporal support for the stimulus
+%                           matrix (or matrices) in units of seconds. Time
+%                           should be defined relative to the start of the
+%                           first TR of each acquisition. Stimulus events
+%                           prior to the onset of the first TR of an
+%                           acquisition can be indicated by negative time
+%                           values.
 %  'modelClass'           - Char vector. The name of one of the available
 %                           model objects. Choices include:
 %                             {'prfTimeShift','flobsHRF','gammaHRF'}
@@ -52,14 +59,6 @@ function results = forwardModel(data,stimulus,tr,varargin)
 %  'modelPayload'         - A cell array of additional inputs that is
 %                           passed to the model object. The form of the
 %                           payload is defined by the model object.
-%  'stimTime'             - [1 st] vector or cell array of such vectors
-%                           provides the temporal support for the stimulus
-%                           matrix (or matrices) in units of seconds. Time
-%                           should be defined relative to the start of the
-%                           first TR of each acquisition. Stimulus events
-%                           prior to the onset of the first TR of an
-%                           acquisition can be indicated by negative time
-%                           values.
 %  'vxs'                  - Vector. A list of vertices/voxels to be
 %                           processed. If not specified, all rows of the
 %                           data matrix will be analyzed.
@@ -87,10 +86,10 @@ p.addRequired('data',@(x)(iscell(x) || ismatrix(x)));
 p.addRequired('stimulus',@(x)(iscell(x) || ismatrix(x)));
 p.addRequired('tr',@(x)(isscalar(x) && ~isnan(x)));
 
+p.addParameter('stimTime',{},@(x)(iscell(x) || ismatrix(x)));
 p.addParameter('modelClass','prfTimeShift',@ischar);
 p.addParameter('modelOpts',{},@iscell);
 p.addParameter('modelPayload',{},@iscell);
-p.addParameter('stimTime',{},@(x)(iscell(x) || ismatrix(x)));
 p.addParameter('vxs',[],@isvector);
 p.addParameter('averageVoxels',false,@islogical);
 p.addParameter('silenceWarnings',true,@islogical);
@@ -210,7 +209,7 @@ end
 % Obtain the model bounds
 lb = model.lb; ub = model.ub;
 
-% Alert the user
+% Alert the user and prepare a progress bar
 if verbose
     if nVxs==1
         fprintf(['Fitting model over one vertex.\n']);
@@ -218,21 +217,27 @@ if verbose
         fprintf(['Fitting model over ' num2str(nVxs) ' vertices.\n']);
     end
     
-    % If this is not deployed code, set up a progress bar
-    if ~isdeployed        
-        % Instantiate the progress bar object with the 'Parallel' switch set to
-        % true and save the aux files in the current working directory (pwd)
+    % If we are in deployed code, issue infrequent progress bar updates, as
+    % each updated accumulates in the log.
+    if isdeployed
+        UpdateRate = 1/60;
+        fprintf(['Updates every ' num2str(1/UpdateRate) ' seconds.\n']);
+    else
         UpdateRate = 5;
-        pbarObj = ProgressBar(nVxs, ...
-            'IsParallel', true, ...
-            'WorkerDirectory', pwd, ...
-            'Title', p.Results.modelClass, ...
-            'UpdateRate', UpdateRate ...
-            );
-        pbarObj.setup([], [], []);
     end
+    % Define a directory where the progress bar update files are kept
+    progLog = tempdir();
+    % Instantiate the progress bar object with the 'Parallel' switch set to
+    % true and save the aux files in a system temporary directory.
+    pbarObj = ProgressBar(nVxs, ...
+        'IsParallel', true, ...
+        'WorkerDirectory', progLog, ...
+        'Title', p.Results.modelClass, ...
+        'UpdateRate', UpdateRate ...
+        );
+    pbarObj.setup([], [], []);
     
-    % Start a timer
+    % Start a timer so that we can log total computation time
     tic
 end
 
@@ -252,8 +257,8 @@ parfor ii=1:nVxs
     end
 
     % Update progress bar
-    if verbose && ~isdeployed
-        updateParallel([], pwd);
+    if verbose
+        updateParallel([], progLog);
     end
     
     % Get the time series for the selected voxel/vertex, transpose to a
@@ -312,9 +317,7 @@ end
 
 % Report completion of loop
 if verbose
-    if ~isdeployed
-        pbarObj.release();
-    end
+    pbarObj.release();
     toc
     fprintf('\n');
 end
