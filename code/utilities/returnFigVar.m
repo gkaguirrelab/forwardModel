@@ -1,5 +1,5 @@
 function s = returnFigVar(figHandle)
-% Returns a structure with the information for plotting a figure
+% Returns a structure with figure data
 %
 % Syntax:
 %   s = returnFigVar(figHandle)
@@ -19,8 +19,8 @@ function s = returnFigVar(figHandle)
 %   none
 %
 % Outputs:
-%   s                     - Structure. Contains fields with information
-%                           that describe how to plot the figure.
+%   s                     - Structure. Contains fields that define the
+%                           creation and appearance of a Matlab figure.
 %
 % Examples:
 %{

@@ -101,6 +101,7 @@ p.parse(data,stimulus,tr, varargin{:})
 verbose = p.Results.verbose;
 silenceWarnings = p.Results.silenceWarnings;
 
+
 %% Alert the user
 if verbose
     fprintf(['\nFitting the ' p.Results.modelClass ' model.\n\n']);
@@ -135,7 +136,7 @@ if ~isempty(p.Results.stimTime)
         error('forwardModel:inputMismatch','Different number of acquisitions specified in the stimTime and stimulus variables');
     end
 else
-    stimTime = p.Results.stimTime;
+    stimTime = {};
 end
 
 % The first dimension of the data matrix indexes across voxels/vertices
@@ -181,12 +182,13 @@ end
 seeds = model.seeds(data,vxs);
 
 
-%% Fit the data
-
-nVxs = length(vxs);
+%% Prepare to fit
 
 % Convert the data into a single, concatenated matrix of [totalVxs time]
 data = catcell(1,data);
+
+% How many voxels/vertices to fit
+nVxs = length(vxs);
 
 % Retain just the voxels to be processed
 data = data(vxs,:);
@@ -241,11 +243,11 @@ if verbose
     tic
 end
 
-
 % Store the warning state
 warningState = warning;
 
-% Loop through the voxels/vertices in vxs
+
+%% Loop through the voxels/vertices in vxs
 parfor ii=1:nVxs
     
     % Silence warnings if so instructed. This must be done inside the par
@@ -275,8 +277,9 @@ parfor ii=1:nVxs
     
     % Loop over seed sets
     for ss = 1:length(seeds)
-        seed = seeds{ss}(vxs(ii),:);
-        x0 = seed;
+        
+        % Grab a seed to start the parameter search
+        x0 = seeds{ss}(vxs(ii),:);
 
         % Loop over model stages
         for bb = 1:model.nStages
@@ -296,7 +299,7 @@ parfor ii=1:nVxs
                 lb(floatSet),ub(floatSet), ...
                 nonlcon, options{bb});
             
-            % Update the x0 guess with the searched params
+            % Update the x0 guess
             x0(model.floatSet{bb}) = x;
         end
         
@@ -307,13 +310,15 @@ parfor ii=1:nVxs
         seedMetric(ss) = model.metric(datats,x0);
     end
     
-    % Save the best result across seeds
-    [~,bestSeedIdx]=max(seedMetric);
+    % Retain the best result across seeds
+    [~,bestSeedIdx] = max(seedMetric);
     parParams(ii,:) = seedParams(bestSeedIdx,:);
     parMetric(ii) = seedMetric(bestSeedIdx);
     
 end
 
+
+%% Post-loop cleanup
 
 % Report completion of loop
 if verbose
