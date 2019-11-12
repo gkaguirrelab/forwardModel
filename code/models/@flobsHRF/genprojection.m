@@ -38,6 +38,9 @@ if isempty(polyDeg)
     polyDeg = round(nTimeSamplesPerAcq.*dataDeltaT/60/2);
     obj.polyDeg = polyDeg;
 end
+if length(polyDeg)==1 && length(nTimeSamplesPerAcq)>1
+    polyDeg=repmat(polyDeg,1,length(nTimeSamplesPerAcq));
+end
 
 % Construct polynomial regressors matrix
 polyregressors = {};
