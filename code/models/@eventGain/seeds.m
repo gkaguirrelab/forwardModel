@@ -26,9 +26,59 @@ function seeds = seeds(obj,data,vxs)
 % Derived vars
 totalVxs = size(data{1},1);
 
-% Generate seeds, which is just the initial values
+% Obj variables
+stimulus = obj.stimulus;
+stimAcqGroups = obj.stimAcqGroups;
+
+nParams = obj.nParams;
+flobsbasis = obj.flobsbasis;
+
+% Generate default seeds
 x0 = obj.initial;
-seeds{1} = repmat(x0,totalVxs,1);
+seedMatrix = repmat(x0,totalVxs,1);
+
+% Create the HRF using the x0 params
+hrf = flobsbasis*x0(nParams-2:nParams)';
+
+% Normalize the kernel to have unit area
+hrf = hrf/sum(abs(hrf));
+
+% Generate the regression matrix, which is the stimulus convolved with the
+% HRF
+X = stimulus;
+for ss = 1:size(stimulus,2)
+    X(:,ss) = conv2run(stimulus(:,ss),hrf,stimAcqGroups);
+end
+
+% Silence warnings that may occur during the regression
+warningState = warning;
+warning('off','MATLAB:rankDeficientMatrix');
+
+
+% Loop over voxels/vertices and find a first guess for the amplitude params
+% using linear regression
+for ii = 1:length(vxs)
+    
+    % Get this time series
+    datats=unitlength(catcell(2,cellfun(@(x) subscript(squish(x,1),{vxs(ii) ':'}),data,'UniformOutput',0))',1,[],0);
+    
+    % Apply the model cleaning step, which may include regression of
+    % nuisance components
+    datats = obj.clean(datats);
+    
+    % Perform the regression
+    beta = stimulus\datats;
+    
+    % Store these params in the seed
+    seedMatrix(vxs(ii),1:nParams-3) = beta;
+    
+end    
+
+% Restore the warning state
+warning(warningState);
+
+% Put the seed matrix in a cell
+seeds = {seedMatrix};
 
 end
 
