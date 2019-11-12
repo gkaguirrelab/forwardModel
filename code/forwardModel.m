@@ -185,7 +185,7 @@ seeds = model.seeds(data,vxs);
 %% Prepare to fit
 
 % Convert the data into a single, concatenated matrix of [totalVxs time]
-data = catcell(1,data);
+data = catcell(2,data);
 
 % How many voxels/vertices to fit
 nVxs = length(vxs);
