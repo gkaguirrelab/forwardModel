@@ -48,14 +48,25 @@ datats = obj.clean(datats);
 modelts = obj.forward(results.params(vxs(vx),:));
 hrf = obj.hrf;
 
+% Flatten the dataTime matrix
+[flatDataTime, dataTimeBreaks] = accumTimeMatrix(obj.dataTime, obj.dataDeltaT);
+
 % Plot the time series
 subplot(2,5,1:4)
-plot(obj.dataTime,datats,'r-');
+plot(flatDataTime,datats,'r-');
 hold on;
-plot(obj.dataTime,modelts,'b-');
+plot(flatDataTime,modelts,'b-');
 xlabel('Time [seconds]');
 ylabel('BOLD signal');
 title(['Best fit time-series, CIFTI vertex ' num2str(vxs(vx))]);
+
+% If there are multiple acquisitions, place vertical lines at the breaks
+if length(dataTimeBreaks) > 1
+    yl = ylim();
+    for ii=1:length(dataTimeBreaks)-1
+    plot([dataTimeBreaks(ii) dataTimeBreaks(ii)],yl,'-k');
+    end
+end
 
 % Plot the HRF
 subplot(2,5,5)
@@ -79,12 +90,20 @@ hrf = obj.hrf;
 
 % Plot the time series
 subplot(2,5,6:9)
-plot(obj.dataTime,datats,'r-');
+plot(flatDataTime,datats,'r-');
 hold on;
-plot(obj.dataTime,modelts,'b-');
+plot(flatDataTime,modelts,'b-');
 xlabel('Time [seconds]');
 ylabel('BOLD signal');
 title(['Median quality fit time-series, CIFTI vertex ' num2str(vxs(vx))]);
+
+% If there are multiple acquisitions, place vertical lines at the breaks
+if length(dataTimeBreaks) > 1
+    yl = ylim();
+    for ii=1:length(dataTimeBreaks)-1
+    plot([dataTimeBreaks(ii) dataTimeBreaks(ii)],yl,'-k');
+    end
+end
 
 % Plot the hrf
 subplot(2,5,10)
