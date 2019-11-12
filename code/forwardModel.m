@@ -165,6 +165,12 @@ data = model.prep(data);
 
 % Handle averageVoxels
 if p.Results.averageVoxels
+
+    % Alert the user
+    if verbose
+        fprintf('Averaging data across voxels.\n');
+    end
+
     % In each acquisition, create the average time series across the vxs
     % voxels, skipping those voxels that have been set to have uniform zero
     % values by the prep stage
