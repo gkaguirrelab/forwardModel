@@ -9,7 +9,7 @@ function results = plot(obj, data, results)
 %   on how to display the figure.
 %
 % Inputs:
-%   data                  -
+%   data                  - 
 %   results               - Structure, with fields for each of the
 %                           parameters, the metric, and some meta data.
 %
@@ -30,7 +30,7 @@ vxs = results.meta.vxs;          % vector of analyzed vertices / voxels
 fig1 = figure('visible','off');
 set(fig1,'PaperOrientation','landscape');
 set(fig1,'PaperUnits','normalized');
-set(gcf,'Units','points','Position',[500 500 750 250]);
+set(gcf,'Units','points','Position',[500 500 1500 300]);
 
 % Pick the voxel with the best model fit
 [~,vx]=nanmax(results.R2(vxs));
@@ -46,10 +46,10 @@ datats = obj.clean(datats);
 [modelts, hrf] = obj.forward(results.params(vxs(vx),:));
 
 % Plot the time series
-subplot(1,5,1:4)
-plot(flatDataTime,datats,'r-');
+subplot(1,10,1:9)
+plot(flatDataTime,datats,'-','Color',[0.75 0.75 0.75],'LineWidth',2);
 hold on;
-plot(flatDataTime,modelts,'b-');
+plot(flatDataTime,modelts,'-r','LineWidth',1);
 xlabel('Time [seconds]');
 ylabel('BOLD signal');
 title(['Best fit time-series, CIFTI vertex ' num2str(vxs(vx))]);
@@ -58,12 +58,12 @@ title(['Best fit time-series, CIFTI vertex ' num2str(vxs(vx))]);
 if length(dataTimeBreaks) > 1
     yl = ylim();
     for ii=1:length(dataTimeBreaks)-1
-    plot([dataTimeBreaks(ii) dataTimeBreaks(ii)],yl,'-k');
+    plot([dataTimeBreaks(ii) dataTimeBreaks(ii)],yl,'-b');
     end
 end
 
 % Plot the HRF
-subplot(1,5,5)
+subplot(1,10,10)
 plot(0:obj.dataDeltaT:(length(hrf)-1)*obj.dataDeltaT,hrf)
 xlabel('Time [seconds]');
 title('HRF');
