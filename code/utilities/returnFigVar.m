@@ -10,7 +10,11 @@ function s = returnFigVar(figHandle)
 %   figure. Given the returned structure, "s", this command will
 %   reinstantiate the figure:
 %
-%       struct2handle(s.hgS_070000,0,'convert');
+%       figHandle = struct2handle(s.hgS_070000,0,'convert');
+%
+%   To make an invisible figure visible, use:
+%
+%       set(figHandle,'Visible','on');
 %
 % Inputs:
 %   figHandle             - Handle to a figure object.
