@@ -370,6 +370,7 @@ results.model.payload =  p.Results.modelPayload;
 % Store the calling options
 results.meta.vxs = vxs;
 results.meta.tr = p.Results.tr;
+results.meta.averageVoxels = p.Results.averageVoxels;
 
 % Add plots to the results
 results = model.plot(data, results);
