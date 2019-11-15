@@ -138,6 +138,10 @@ cleanFun = @(x) obj.clean(x);
 parfor p=1:length(chunks)
     
     % time x voxels
+    % The unitlength function standardizes the variance for the time series
+    % from each acquisition. While this alters the amplitude of the time
+    % series data, this is not of consequence as our metric below is the
+    % correlation.
     datats = unitlength(catcell(2,cellfun(@(x) subscript(squish(x,1),{vxs(chunks{p}) ':'}),data,'UniformOutput',0))',1,[],0);
     
     % Clean the time series
