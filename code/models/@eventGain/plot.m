@@ -52,7 +52,16 @@ hold on;
 plot(flatDataTime,modelts,'-r','LineWidth',1);
 xlabel('Time [seconds]');
 ylabel('BOLD signal');
-title(['Best fit time-series, CIFTI vertex ' num2str(vxs(vx))]);
+if results.meta.averageVoxels
+    title(['Fit to average time series, n=' num2str(length(vxs)) ' vertices']);
+else
+    title(['Best fit time-series, CIFTI vertex ' num2str(vxs(vx))]);
+end
+
+% Add an annotation to report the R^2 fit
+outString = sprintf('R^{2} = %2.2f',results.R2(vxs(vx)));
+dim = [.15 .5 .3 .4];
+annotation('textbox',dim,'String',outString,'FitBoxToText','on');
 
 % If there are multiple acquisitions, place vertical lines at the breaks
 if length(dataTimeBreaks) > 1
@@ -71,5 +80,12 @@ title('HRF');
 % Store the figure contents in a variable
 results.figures.fig1 = returnFigVar(fig1);
 results.figures.fig1.format = '-dpdf';
+
+% If averageVoxels is true, save the data, model fit, and hrf
+if results.meta.averageVoxels
+    results.datats = datats;
+    results.modelts = modelts;
+    results.hrf = hrf;
+end
 
 end

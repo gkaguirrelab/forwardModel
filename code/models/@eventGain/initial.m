@@ -32,7 +32,15 @@ x0 = zeros(1,nParams);
 
 % Assemble X0
 x0(1:nParams-3) = typicalGain;              % gain
-x0(nParams-2:nParams) = [0.86, 0.09, 0.01]; % FLOBS eigen1, 2, 3
+
+switch obj.hrfType
+    case 'flobs'
+        x0(nParams-2:nParams) = [0.86, 0.09, 0.01]; % FLOBS eigen1, 2, 3
+    case 'gamma'
+        x0(nParams-2:nParams) = [6, 10, 0.1]; % Gamma params
+    otherwise
+        error('Not a valid hrfType')
+end
 
 end
 

@@ -26,23 +26,37 @@ function setbounds(obj)
 
 % Obj variables
 nParams = obj.nParams;
-mu = obj.mu;
-C = obj.C;
-
-% Set bounds at +-10SDs of the norm distributions of the FLOBS parameters
-sd15 = 15*diag(C)';
 
 % Define outputs
 lb = nan(1,nParams);
 ub = nan(1,nParams);
 
-% The lower bounds
+% The gain parameters are unbounded
 lb(1:nParams-3) = -Inf;             % gain
-lb(nParams-2:nParams) = mu-sd15;	% FLOBS eigen1, 2, 3
-
-% The upper bounds
 ub(1:nParams-3) = Inf;              % gain
-ub(nParams-2:nParams) = mu+sd15;	% FLOBS eigen1, 2, 3
+
+% The HRF shape parameters vary by model type
+switch obj.hrfType
+    case 'flobs'
+        
+        % Object properties associated with the FLOBS eigenvectors
+        mu = obj.mu;
+        C = obj.C;
+        
+        % Set bounds at +-10SDs of the norm distributions of the FLOBS
+        % parameters
+        sd15 = 15*diag(C)';
+        
+        lb(nParams-2:nParams) = mu-sd15;	% FLOBS eigen1, 2, 3
+        ub(nParams-2:nParams) = mu+sd15;	% FLOBS eigen1, 2, 3
+
+    case 'gamma'
+        lb(nParams-2:nParams) = [2 6 0];	% Gamma1,2, and undershoot gain
+        ub(nParams-2:nParams) = [8 12 2];	% Gamma1,2, and undershoot gain
+
+    otherwise
+        error('Not a valid hrfType')
+end
 
 % Store the bounds in the object
 obj.lb = lb;

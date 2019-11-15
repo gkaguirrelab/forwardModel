@@ -76,6 +76,9 @@ classdef eventGain < handle
         % A time x 1 vector that defines the HRF convolution kernel
         hrf
         
+        % The type of HRF model, including {'flobs','gamma'};
+        hrfType
+        
     end
     
     % These may be modified after object creation
@@ -120,6 +123,8 @@ classdef eventGain < handle
             p.addParameter('payload',{},@iscell);
             p.addParameter('polyDeg',[],@isnumeric);
             p.addParameter('typicalGain',300,@isscalar);
+            p.addParameter('hrfType','flobs',@ischar);            
+            p.addParameter('hrfSearch',true,@islogical);            
             p.addParameter('verbose',true,@islogical);
             
             % parse
@@ -145,8 +150,13 @@ classdef eventGain < handle
             obj.nParams = nStimTypes+3;
             
             % Define the fix and float param sets
-            obj.floatSet = {1:obj.nParams};
-            obj.fixSet = {[]};
+            if p.Results.hrfSearch
+                obj.floatSet = {1:obj.nParams};
+                obj.fixSet = {[]};
+            else
+                obj.floatSet = {1:obj.nParams-3};
+                obj.fixSet = {obj.nParams-2:obj.nParams};
+            end
             
             % Create the stimAcqGroups variable. Concatenate the cells and
             % store in the object.
@@ -203,6 +213,7 @@ classdef eventGain < handle
             obj.payload = p.Results.payload;
             obj.polyDeg = p.Results.polyDeg;
             obj.typicalGain = p.Results.typicalGain;
+            obj.hrfType = p.Results.hrfType;
             obj.verbose = p.Results.verbose;
             
             % Create and cache the flobs basis
@@ -213,6 +224,10 @@ classdef eventGain < handle
             
             % Create and cache the projection matrix
             obj.genprojection;
+            
+            % Call the forward model to create and store an initial hrf
+            obj.forward(obj.initial);
+            
             
         end
         

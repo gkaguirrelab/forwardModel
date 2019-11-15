@@ -29,22 +29,18 @@ totalVxs = size(data{1},1);
 % Obj variables
 stimulus = obj.stimulus;
 stimAcqGroups = obj.stimAcqGroups;
-
 nParams = obj.nParams;
-flobsbasis = obj.flobsbasis;
 
 % Generate default seeds
 x0 = obj.initial;
 seedMatrix = repmat(x0,totalVxs,1);
 
-% Create the HRF using the x0 params
-hrf = flobsbasis*x0(nParams-2:nParams)';
+% Grab the HRF that is currently attached to the object. When the object is
+% created, the HRF generated with the obj.initial parameters is stored.
+hrf = obj.hrf;
 
-% Normalize the kernel to have unit area
-hrf = hrf/sum(abs(hrf));
-
-% Generate the regression matrix, which is the stimulus convolved with the
-% HRF
+% Generate the regression matrix, which is the stimulus times the typical
+% gain, convolved with the HRF
 X = stimulus;
 for ss = 1:size(stimulus,2)
     X(:,ss) = conv2run(stimulus(:,ss),hrf,stimAcqGroups);
@@ -60,14 +56,14 @@ warning('off','MATLAB:rankDeficientMatrix');
 for ii = 1:length(vxs)
     
     % Get this time series
-    datats=unitlength(catcell(2,cellfun(@(x) subscript(squish(x,1),{vxs(ii) ':'}),data,'UniformOutput',0))',1,[],0);
+    datats=catcell(2,cellfun(@(x) subscript(squish(x,1),{vxs(ii) ':'}),data,'UniformOutput',0))';
     
     % Apply the model cleaning step, which may include regression of
     % nuisance components
     datats = obj.clean(datats);
     
     % Perform the regression
-    beta = stimulus\datats;
+    beta = X\datats;
     
     % Store these params in the seed
     seedMatrix(vxs(ii),1:nParams-3) = beta;
