@@ -1,15 +1,22 @@
 # forwardModel
 
-forwardModel is a MATLAB toolbox for non-linear fitting of models to fMRI data. It started life as analyzePRF (http://kendrickkay.net/analyzePRF/) by Kendrick Kay. It has undergone refactoring to operate as an object-oriented system for fitting models. Much of the clever structure that Kendrick had created (e.g., for cross-validation) was stripped out to create a simpler, more general-purpose framework.
+Framework for non-linear fitting of parameterized models to fMRI time-series data.
 
-The legacy of Kendrick's code is most clearly seen in the model for pRF mapping in retinotopic data. Specifically, the approach to creating seeds, and the inclusion of a compressive non-linearity in the modeled neural response, which is taken from:
+The fMRI data are passed as a voxel x time matrix; the stimulus is specified in a matrix with the temporal domain as the last dimension. Data and stimuli from multiple acquisitions may be passed in as a cell array of matrices. The stimulus may have a different temporal resolution than the data, in which case the key-value stimTime defines the mapping between stimulus and data. All voxels in the data are processed unless a subset are specified in the key-value vxs.
+
+The key-value modelClass determines the model to be fit to the data. Each model is implemented as an object oriented class within the models directory. The behavior of the model may be controlled by passing modelOpts, and by passing additional materials in the modelPayload.
+
+Multiple, cascading stages of non-linear fitting are supported with the ability to define sets of parameters that are fixed or float in a given search, with the results of a search passing to initialize the next stage.
+
+This framework uses several utility functions from Kendrick Kay's analyzePRF toolbox:
+
+	https://github.com/kendrickkay/analyzePRF
+
+The pRF modelClass draws from Kendrickks' code in the approach to creating seeds, and the inclusion of a compressive non-linearity in the modeled neural response, which is taken from:
 
   Kay KN, Winawer J, Mezer A and Wandell BA (2013) Compressive spatial summation in human visual cortex. J. Neurophys. doi: 10.1152/jn.00105.2013
 
-The implementation of pRF mapping implemented here differs from Kendrick's original code in a few ways:
-  - The HRF is modeled as a double-gamma, which can be modified under the control of parameters
-  - Multiple, cascading stages of non-linear fitting are supported with the ability to define sets of parameters that are fixed or float in a given search, with the results of a search passing to initialize the next stage.
+The pRF modelClass implemented here differs from Kendrick's original code in a few ways:
+  - The HRF is with FLOBS parameters
   - For retinotopic mapping designs that play the same stimulus forward and reverse in time, the model will estimate a shift of the HRF time-to-peak to best fit the data.
   - Upper and lower bounds are enforced with an fmincon search.
-
-More generally, the code supports the creation of object-oriented model classes that can be evaluated within a common framework.
