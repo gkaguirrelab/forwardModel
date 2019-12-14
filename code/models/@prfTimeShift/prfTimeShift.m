@@ -93,7 +93,7 @@ classdef prfTimeShift < handle
     % These may be modified after object creation
     properties (SetAccess=public)
         
-        % 1x4 vector that defines the parameters of an HRF
+        % 1x3 vector that defines the parameters of an HRF
         hrfParams
         
         % The number of low frequencies to be removed from each acquisition
