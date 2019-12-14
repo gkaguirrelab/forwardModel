@@ -214,7 +214,11 @@ data = data(vxs,:);
 basicOptions = optimoptions('fmincon','Display','off');
 
 % Pre-compute functions that will asemble the parameters in the different
-% model stages, and create different option sets
+% model stages, and create different option sets. We have to pre-define
+% xSort so that the parpool will later be happy if it is the case we run a
+% model with zero stages. This way, xSort is defined, even if empty.
+xSort = [];
+options = [];
 for bb = 1:model.nStages
 	order = [model.floatSet{bb} model.fixSet{bb}];
 	[~,sortOrder]=sort(order);
@@ -258,6 +262,9 @@ if verbose
     
     % Start a timer so that we can log total computation time
     tic
+else
+    % Have to set this variable to keep par pool happy
+    progLog = [];
 end
 
 % Store the warning state
