@@ -31,13 +31,14 @@ function results = forwardModel(data,stimulus,tr,varargin)
 %                           time domain of the stimulus. The precise form
 %                           of the stimulus matrix is determined by the
 %                           particular model that is to be fit. A typical
-%                           form is [x y st], which provides the property
-%                           of the stimulus in the x-y domain of the
-%                           stimulus display over stimulus time. The input
-%                           may also be a cell array of such matrices. If
-%                           the stimulus time (st) is different in length
-%                           than the data time (t), a valid stimTime
-%                           key-value must be passed (see below).
+%                           form is [1 st] or [x y st], with the latter
+%                           defining the property of the stimulus in the
+%                           x-y domain of the stimulus display over
+%                           stimulus time. The input may also be a cell
+%                           array of such matrices. If the stimulus time
+%                           (st) is different in length than the data time
+%                           (t), a valid stimTime key-value must be passed
+%                           (see below).
 %   tr                    - Scalar. The TR of the fMRI data in seconds.
 %
 % Optional key/value pairs:
@@ -163,7 +164,14 @@ model.verbose = verbose;
 % Prep the raw data
 data = model.prep(data);
 
-% Handle averageVoxels
+% Voxels with badness in any acquisition will (at the model.prep stage)
+% have been set to have a uniform value of zero in all acquisitions. We can
+% find and remove these from the vxs list by just examining the first cell
+% of data.
+nonZeroVxs = ~all(data{1}(vxs,:)==0,2);
+vxs = vxs(nonZeroVxs);
+
+% Average the data across vxs if requested
 if p.Results.averageVoxels
 
     % Alert the user
@@ -171,16 +179,19 @@ if p.Results.averageVoxels
         fprintf('Averaging data across voxels.\n');
     end
 
-    % In each acquisition, create the average time series across the vxs
-    % voxels, skipping those voxels that have been set to have uniform zero
-    % values by the prep stage
-    for ii = 1:length(data)
-        nonZeroVxs = ~all(data{ii}(vxs,:)==0,2);
-        averagets = mean(data{ii}(vxs(nonZeroVxs),:),1);
-        data{ii}(vxs,:)=repmat(averagets,length(vxs),1);
-    end
     % Retain the full set of vxs
     fullVxs = vxs;
+
+    % In each acquisition, create the average time series across the vxs
+    % voxels.
+    for ii = 1:length(data)
+        averagets = mean(data{ii}(vxs,:),1);
+        data{ii}(vxs,:)=repmat(averagets,length(vxs),1);
+    end
+    
+    % We effectively now have just one vxs of data to process. Later, we
+    % will expand the results to fill in all of the vxs indices with the
+    % result calculated for this one, average time series.
     vxs = vxs(1);
 end
 
@@ -220,7 +231,7 @@ lb = model.lb; ub = model.ub;
 % Alert the user and prepare a progress bar
 if verbose
     if nVxs==1
-        fprintf(['Fitting model over one vertex.\n']);
+        fprintf('Fitting model over one vertex.\n');
     else
         fprintf(['Fitting model over ' num2str(nVxs) ' vertices.\n']);
     end
@@ -254,6 +265,7 @@ warningState = warning;
 
 
 %% Loop through the voxels/vertices in vxs
+
 parfor ii=1:nVxs
     
     % Silence warnings if so instructed. This must be done inside the par
@@ -367,7 +379,8 @@ end
 results.model.opts =  [p.Results.modelOpts 'stimTime' stimTime];
 results.model.payload =  p.Results.modelPayload;
 
-% Store the calling options
+% Store the calling options (which, in the case of vxs, may have been
+% modified during the execution of this function)
 results.meta.vxs = vxs;
 results.meta.tr = p.Results.tr;
 results.meta.averageVoxels = p.Results.averageVoxels;
