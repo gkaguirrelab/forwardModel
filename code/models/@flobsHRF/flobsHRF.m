@@ -135,10 +135,18 @@ classdef flobsHRF < handle
             obj.dataDeltaT = tr;            
             clear data            
             
-            % Vectorize the stimuli. Create the stimAcqGroups
-            % variable. Concatenate and store in the object.
+            % Vectorize the stimuli. Set the first dimension to time.
+            % Create the stimAcqGroups variable. Concatenate and store in
+            % the object.
             for ii=1:length(stimulus)
-                stimulus{ii} = squish(stimulus{ii},2)';
+                switch ndims(stimulus{ii})
+                    case 3
+                        stimulus{ii} = squish(stimulus{ii},2)';
+                    case 2
+                        stimulus{ii} = stimulus{ii}';
+                    otherwise
+                        error('flobsHRF:illFormedStimulus','The stimulus matricies must be 2 or 3 dimensions, witht the time dimension last')
+                end
                 stimAcqGroups{ii} = ii*ones(size(stimulus{ii},1),1);
             end
             obj.stimulus = catcell(1,stimulus);
