@@ -26,11 +26,11 @@ function results = results(obj, params, metric)
 
 
 % Map params and metric to a results structure
-results.R2 =            metric;
+results.R2 = metric;
 
 
 % Add the params themselves
-results.params =   params;
+results.params = params;
 
 
 end

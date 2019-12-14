@@ -26,7 +26,7 @@ classdef glm < handle
         
         % The number of parameters in the model
         nParams;
-                
+        
         % A vector of the length totalTRs x 1 that has an index value to
         % indicate which acquisition (1, 2, 3 ...) a data time
         % sample is from.
@@ -65,17 +65,22 @@ classdef glm < handle
         % A time x 1 vector that defines the HRF convolution kernel
         hrf
         
-        % The type of HRF model, including {'flobs','gamma'};
-        hrfType
         
     end
     
     % These may be modified after object creation
     properties (SetAccess=public)
         
+        % 1x3 vector that defines the parameters of an HRF
+        hrfParams
+        
         % The number of low frequencies to be removed from each acquisition
         polyDeg
-        
+
+        % The lower and upper bounds for the model
+        lb
+        ub
+
         % Verbosity
         verbose
         
@@ -114,14 +119,13 @@ classdef glm < handle
             obj.dataDeltaT = tr;
             clear data
             
-            % Each row in the stimulus is a different stum type that will
+            % Each row in the stimulus is a different stim type that will
             % be fit with its own gain parameter. Record how many there are
             nStimTypes = size(stimulus{1},1);
             
-            % The number of params is the number of stim types, plus three
-            % for the form of the HRF
-            obj.nParams = nStimTypes+3;
-                        
+            % The number of params is the number of stim types
+            obj.nParams = nStimTypes;
+            
             % Create the stimAcqGroups variable. Concatenate the cells and
             % store in the object.
             for ii=1:length(stimulus)
@@ -175,6 +179,7 @@ classdef glm < handle
             
             % Distribute other params to obj properties
             obj.payload = p.Results.payload;
+            obj.hrfParams = p.Results.hrfParams;
             obj.polyDeg = p.Results.polyDeg;
             obj.verbose = p.Results.verbose;
             
@@ -182,7 +187,10 @@ classdef glm < handle
             obj.genhrf
             
             % Create and cache the projection matrix
-            obj.genprojection;            
+            obj.genprojection;
+            
+            % Set the bounds
+            obj.setbounds
             
         end
         
@@ -202,6 +210,11 @@ classdef glm < handle
         genprojection(obj)
         
         % Set methods
+        function set.hrfParams(obj, value)
+            obj.hrfParams = value;
+            obj.genhrf;
+        end
+        
         function set.polyDeg(obj, value)
             obj.polyDeg = value;
             obj.genprojection;

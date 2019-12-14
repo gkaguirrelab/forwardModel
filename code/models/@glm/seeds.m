@@ -25,6 +25,7 @@ function seeds = seeds(obj,data,vxs)
 
 % Derived vars
 totalVxs = size(data{1},1);
+nVxs = length(vxs);
 
 % Obj variables
 stimulus = obj.stimulus;
@@ -69,7 +70,7 @@ if verbose
     pbarObj = ProgressBar(nVxs, ...
         'IsParallel', true, ...
         'WorkerDirectory', progLog, ...
-        'Title', p.Results.modelClass, ...
+        'Title', 'glm', ...
         'UpdateRate', UpdateRate ...
         );
     pbarObj.setup([], [], []);
@@ -79,13 +80,11 @@ if verbose
 end
 
 % Loop over voxels/vertices and obtain the regression parameters
-parfor ii = 1:length(vxs)
+parfor ii = 1:nVxs
     
     % Silence warnings. This must be done inside the par loop to apply to
     % each worker.
-    if silenceWarnings
-        warning('off','MATLAB:rankDeficientMatrix');
-    end
+    warning('off','MATLAB:rankDeficientMatrix');
 
     % Update progress bar
     if verbose
