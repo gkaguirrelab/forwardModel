@@ -32,5 +32,13 @@ results.R2 = metric;
 % Add the params themselves
 results.params = params;
 
+% Identify the color scale to be used for plotting the R2 map
+results.meta.mapField = {'R2'};
+results.meta.mapScale = {'grayRed'};
+results.meta.mapLabel = {'R2'};
+
+% Define the bounds for the plots
+
+results.meta.mapBounds = {[0 1]};
 
 end
