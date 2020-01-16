@@ -28,7 +28,6 @@ function results = results(obj, params, metric)
 % Map params and metric to a results structure
 results.R2 = metric;
 
-
 % Add the params themselves
 results.params = params;
 
@@ -38,7 +37,6 @@ results.meta.mapScale = {'grayRed'};
 results.meta.mapLabel = {'R2'};
 
 % Define the bounds for the plots
-
 results.meta.mapBounds = {[0 1]};
 
 end
