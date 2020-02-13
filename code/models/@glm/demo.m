@@ -1,8 +1,7 @@
-%% eventGain
+%% glm
 %
-% This model simulataneously estimates the gain (amplitude) of events
-% described in the stimulus matrix, and the three parameters of a FLOBS HRF
-% convolution step.
+% This model estimates the gain (amplitude) of events described in the
+% stimulus matrix, assuming a fixed form of the HRF
 %
 % A typical application would be an fMRI experiment with multiple stimulus
 % events or blocks.
@@ -25,7 +24,7 @@ stimulus = {stimulus};
 % Instantiate the model
 tr = 0.8;
 dummyData = {step};
-model = eventGain(dummyData,stimulus,tr);
+model = glm(dummyData,stimulus,tr);
 
 % Create simulated data with varying amplitudes of the events, and add some
 % noise
@@ -37,7 +36,7 @@ data = [];
 data{1}(1,:) = datats;
 
 % Call the forwardModel
-results = forwardModel(data,stimulus,tr,'modelClass','eventGain');
+results = forwardModel(data,stimulus,tr,'modelClass','glm');
 
 % Plot the simulated vs. recovered parameters
 figure
