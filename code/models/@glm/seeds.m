@@ -41,8 +41,9 @@ seedMatrix = repmat(x0,totalVxs,1);
 % HRF
 X = stimulus;
 for ss = 1:size(stimulus,2)
-    X(:,ss) = conv2run(stimulus(:,ss),hrf,stimAcqGroups);
+    X(:,ss) = obj.clean(conv2run(stimulus(:,ss),hrf,stimAcqGroups));
 end
+
 
 % Store the warning state
 warningState = warning;
@@ -79,6 +80,7 @@ if verbose
     tic
 end
 
+
 % Loop over voxels/vertices and obtain the regression parameters
 parfor ii = 1:nVxs
     
@@ -102,7 +104,7 @@ parfor ii = 1:nVxs
     beta = X\datats;
     
     % Store these params in the loop variable
-    loop_beta(ii) = beta;
+    loop_beta(ii,:) = beta;
     
 end    
 
