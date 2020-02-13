@@ -32,8 +32,8 @@ neuralSignal = stimulus*x';
 % Convolve the neuralSignal by the hrf, respecting acquisition boundaries
 fit = conv2run(neuralSignal,hrf,stimAcqGroups);
 
-% If the stimTime variable is not empty, resample the fit to match
-% the temporal support of the data.
+% If the stimTime variable is not empty, resample the fit to match the
+% temporal support of the data.
 if ~isempty(stimTime)
     dataAcqGroups = obj.dataAcqGroups;
     dataTime = obj.dataTime;
