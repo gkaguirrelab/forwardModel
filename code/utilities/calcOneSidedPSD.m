@@ -13,8 +13,18 @@ function [psd, psdSupport] = calcOneSidedPSD( signal, signalSupport )
 %   spectrum is equal to the variance of the input signal
 %
 % Inputs:
+%   signal                - 1xn vector of values that is the time-series
+%                           data. Must be of even length (sorry!).
+%   signalSupport         - 1xn vector of values (in units of msecs) that
+%                           is the temporal support for the signal.
 %
 % Outputs:
+%   psd                   - 1x(n/2) vector of values that is the power at
+%                           each frequency
+%   psdSupport            - 1x(n/2) vector of values (in units of Hz) that
+%                           is the frequency support for the power
+%                           spectrum.
+%
 
 % Length of the signal
 dataLength = length(signal);
