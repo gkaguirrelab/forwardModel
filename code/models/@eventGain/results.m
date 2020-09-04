@@ -28,9 +28,17 @@ function results = results(obj, params, metric)
 % Map params and metric to a results structure
 results.R2 =            metric;
 
-
 % Add the params themselves
 results.params =   params;
 
+% Save each beta value to a separate field
+nParams = obj.nParams;
+for pp = 1:nParams-2
+    fieldName = sprintf('beta%02d',pp);
+    results.meta.mapField{pp} = fieldName;
+    results.meta.mapScale{pp} = 'blueRed';
+    results.meta.mapLabel{pp} = fieldName;
+    results.(fieldName) = params(:,pp);
+end
 
 end
