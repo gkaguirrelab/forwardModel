@@ -33,12 +33,13 @@ results.params =   params;
 
 % Save each beta value to a separate field
 nParams = obj.nParams;
-for pp = 1:nParams-2
+for pp = 1:nParams-3
     fieldName = sprintf('beta%02d',pp);
     results.meta.mapField{pp} = fieldName;
     results.meta.mapScale{pp} = 'blueRed';
     results.meta.mapLabel{pp} = fieldName;
     results.(fieldName) = params(:,pp);
 end
+
 
 end
