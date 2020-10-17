@@ -8,7 +8,7 @@ classdef eventGain < handle
         % A description of the model
         description = ...
             ['Find the gain for each stimulus component, \n' ...
-            'and the parameters of a FLOBS HRF model.\n'];
+            'and the parameters of an HRF model.\n'];
     end
     
     % Private properties
@@ -141,7 +141,7 @@ classdef eventGain < handle
             obj.dataDeltaT = tr;
             clear data
             
-            % Each row in the stimulus is a different stum type that will
+            % Each row in the stimulus is a different stim type that will
             % be fit with its own gain parameter. Record how many there are
             nStimTypes = size(stimulus{1},1);
             
