@@ -32,11 +32,11 @@ classdef eventGain < handle
     properties (SetAccess=private)
         
         % The number of parameters in the model
-        nParams;
+        nParams
         
         % Properties of the search stages.
-        floatSet;
-        fixSet;
+        floatSet
+        fixSet
         
         % A vector of the length totalTRs x 1 that has an index value to
         % indicate which acquisition (1, 2, 3 ...) a data time
@@ -55,6 +55,10 @@ classdef eventGain < handle
         % squished across x y. Thus it will have the dimensions:
         %	[totalST x*y]
         stimulus
+        
+        % A set of labels for the stimuli, used to label maps and the
+        % result fields
+        stimLabels
         
         % A vector of length totalST x 1 that has an index value to
         % indicate which acquisition (1, 2, 3 ...) a stimulus time
@@ -120,6 +124,7 @@ classdef eventGain < handle
             p.addRequired('tr',@isscalar);
             
             p.addParameter('stimTime',{},@iscell);
+            p.addParameter('stimLabels',{},@iscell);
             p.addParameter('payload',{},@iscell);
             p.addParameter('polyDeg',[],@isnumeric);
             p.addParameter('typicalGain',300,@isscalar);
@@ -148,6 +153,20 @@ classdef eventGain < handle
             % The number of params is the number of stim types, plus three
             % for the form of the HRF
             obj.nParams = nStimTypes+3;
+            
+            % Define the stimLabels
+            if isempty(p.Results.stimLabels)
+                stimLabels = p.Results.stimLabels;
+                if length(stimLabels) ~= nStimTypes
+                    error('forwardModelObj:badStimLabels','the stimLabels value must be a cell array equal to the number of stimulus types.');
+                end
+            else
+                stimLabels = cell(1,nStimTypes);
+                for pp = 1:nStimTypes
+                    stimLabels{pp} = sprintf('beta%02d',pp);
+                end
+            end
+            obj.stimLabels = stimLabels;
             
             % Define the fix and float param sets
             if p.Results.hrfSearch

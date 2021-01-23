@@ -26,19 +26,21 @@ function results = results(obj, params, metric)
 
 
 % Map params and metric to a results structure
-results.R2 =            metric;
+results.R2 = metric;
 
 % Add the params themselves
-results.params =   params;
+results.params = params;
+
+% Get the stimLabels
+stimLabels = obj.stimLabels;
 
 % Save each beta value to a separate field
 nParams = obj.nParams;
 for pp = 1:nParams-3
-    fieldName = sprintf('beta%02d',pp);
-    results.meta.mapField{pp} = fieldName;
+    results.meta.mapField{pp} = stimLabels;
     results.meta.mapScale{pp} = 'blueRed';
-    results.meta.mapLabel{pp} = fieldName;
-    results.(fieldName) = params(:,pp);
+    results.meta.mapLabel{pp} = stimLabels;
+    results.(stimLabels) = params(:,pp);
 end
 
 
