@@ -379,7 +379,7 @@ results = model.results(params, metric);
 
 % Add the model information
 results.model.class = p.Results.modelClass;
-results.model.inputs = {stimulus, p.Results.tr};
+results.model.inputs = {'data omitted', stimulus, p.Results.tr};
 if isempty(stimTime)
     stimTime = {stimTime};
 end
