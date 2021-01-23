@@ -43,7 +43,7 @@ switch obj.hrfType
         mu = obj.mu;
         C = obj.C;
         
-        % Set bounds at +-10SDs of the norm distributions of the FLOBS
+        % Set bounds at +-15SDs of the norm distributions of the FLOBS
         % parameters
         sd15 = 15*diag(C)';
         
