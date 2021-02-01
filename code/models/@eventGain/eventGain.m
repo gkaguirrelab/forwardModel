@@ -155,7 +155,7 @@ classdef eventGain < handle
             obj.nParams = nStimTypes+3;
             
             % Define the stimLabels
-            if isempty(p.Results.stimLabels)
+            if ~isempty(p.Results.stimLabels)
                 stimLabels = p.Results.stimLabels;
                 if length(stimLabels) ~= nStimTypes
                     error('forwardModelObj:badStimLabels','the stimLabels value must be a cell array equal to the number of stimulus types.');

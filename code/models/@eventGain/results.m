@@ -40,7 +40,7 @@ for pp = 1:nParams-3
     results.meta.mapField{pp} = stimLabels;
     results.meta.mapScale{pp} = 'blueRed';
     results.meta.mapLabel{pp} = stimLabels;
-    results.(stimLabels) = params(:,pp);
+    results.(stimLabels{pp}) = params(:,pp);
 end
 
 
