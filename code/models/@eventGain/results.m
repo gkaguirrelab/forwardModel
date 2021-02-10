@@ -37,9 +37,9 @@ stimLabels = obj.stimLabels;
 % Save each beta value to a separate field
 nParams = obj.nParams;
 for pp = 1:nParams-3
-    results.meta.mapField{pp} = stimLabels;
+    results.meta.mapField{pp} = stimLabels{pp};
     results.meta.mapScale{pp} = 'blueRed';
-    results.meta.mapLabel{pp} = stimLabels;
+    results.meta.mapLabel{pp} = stimLabels{pp};
     results.(stimLabels{pp}) = params(:,pp);
 end
 
