@@ -40,8 +40,15 @@ for pp = 1:nParams-3
     results.meta.mapField{pp} = stimLabels{pp};
     results.meta.mapScale{pp} = 'blueRed';
     results.meta.mapLabel{pp} = stimLabels{pp};
+    results.meta.mapBounds{pp} = [min(params(:)) max(params(:))];
     results.(stimLabels{pp}) = params(:,pp);
 end
+
+% Add the R2 map
+results.meta.mapField{nParams-2} = 'R2';
+results.meta.mapScale{nParams-2} = 'grayRed';
+results.meta.mapLabel{nParams-2} = 'R^2';
+results.meta.mapBounds{nParams-2} = [0 1];
 
 
 end
