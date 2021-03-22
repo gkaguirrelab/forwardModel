@@ -139,7 +139,7 @@ classdef eventGain < handle
             % Concatenate and store in the object.
             for ii=1:length(data)
                 dataAcqGroups{ii} = ii*ones(size(data{ii},2),1);
-                dataTime{ii} = 0:tr:tr*(size(data{ii},2)-1);
+                dataTime{ii} = (0:tr:tr*(size(data{ii},2)-1))';
             end
             obj.dataAcqGroups = catcell(1,dataAcqGroups);
             obj.dataTime = catcell(1,dataTime);
@@ -217,6 +217,10 @@ classdef eventGain < handle
                 end
                 obj.stimDeltaT = deltaTs(1);
                 % Concatenate and store the stimTime vector
+                for ii=1:length(stimTime)
+                    % Transpose stimTime within cells
+                    stimTime{ii} = stimTime{ii}';
+                end
                 obj.stimTime = catcell(1,stimTime);
                 % Check to make sure that the length of the stimTime vector
                 % matches the length of the stimAcqGroups

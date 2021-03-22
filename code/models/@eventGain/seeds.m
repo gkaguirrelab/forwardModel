@@ -28,22 +28,20 @@ totalVxs = size(data{1},1);
 
 % Obj variables
 stimulus = obj.stimulus;
-stimAcqGroups = obj.stimAcqGroups;
 nParams = obj.nParams;
 
 % Generate default seeds
 x0 = obj.initial;
 seedMatrix = repmat(x0,totalVxs,1);
 
-% Grab the HRF that is currently attached to the object. When the object is
-% created, the HRF generated with the obj.initial parameters is stored.
-hrf = obj.hrf;
-
-% Generate the regression matrix, which is the stimulus times the typical
-% gain, convolved with the HRF
-X = stimulus;
+% Generate the regression matrix, which is the forward model output for
+% each stimulus, assuming the typical gain.
+X = zeros(size(obj.dataTime,1),size(stimulus,2));
 for ss = 1:size(stimulus,2)
-    X(:,ss) = conv2run(stimulus(:,ss),hrf,stimAcqGroups);
+    xp = x0;
+    xp(1:size(stimulus,2))=0;
+    xp(ss) = x0(ss);
+    X(:,ss) = forward(obj, xp);
 end
 
 % Silence warnings that may occur during the regression

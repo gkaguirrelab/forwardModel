@@ -1,6 +1,6 @@
 function signalOut = resamp2run(signalIn,stimAcqGroups,stimTime,dataAcqGroups,dataTime)
 
-signalOut = [];
+signalOut = nan(size(dataAcqGroups));
 for ii=1:max(stimAcqGroups)
     
     % The stim time vector corresponding to this acquisition
@@ -13,10 +13,12 @@ for ii=1:max(stimAcqGroups)
     acqSignal = interp1(acqStimTime, signalIn(stimAcqGroups==ii),acqDataTime,'linear',0);
     
     % Add this to the growing output fit variable
-    signalOut = [signalOut acqSignal];
+    signalOut((ii-1)*length(acqSignal)+1:(ii-1)*length(acqSignal)+length(acqSignal)) = acqSignal;
 end
 
-% Transpose the vector to return in column order
+% Return in column order
+if size(signalOut,1)==1
 signalOut = signalOut';
+end
 
 end
