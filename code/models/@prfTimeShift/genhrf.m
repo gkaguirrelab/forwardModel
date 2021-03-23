@@ -23,7 +23,7 @@ function genhrf(obj)
 
 
 % Obj variables
-stimDeltaT = obj.dataDeltaT;
+stimDeltaT = obj.stimDeltaT;
 hrfParams = obj.hrfParams;
 
 % Obtain the FLOBS vectors
