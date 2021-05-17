@@ -1,15 +1,16 @@
-function [flatTime, breaks] = accumTimeMatrix(timeMatrix, deltaT)
+function [flatTime, breaks] = accumTimeMatrix(dataTime,dataAcqGroups,deltaT)
 
-flatTime=timeMatrix(1,:);
-breaks(1) = timeMatrix(1,end);
-
-if size(timeMatrix,1)>1
-    for ii=2:size(timeMatrix,1)
-        block = timeMatrix(ii,:)+flatTime(end)+deltaT;
-        flatTime = [flatTime block];
-        breaks(ii) = flatTime(end);
-    end
+flatTime = [];
+breaks = 0;
+idx = 1;
+startTime = 0;
+for ii = 1:max(dataAcqGroups)    
+    flatTime = [flatTime; startTime+dataTime(dataAcqGroups==ii)+deltaT];
+    idx = length(flatTime)+1;
+    startTime = max(flatTime);
+    breaks = [breaks; startTime];
 end
+
 
 end
 

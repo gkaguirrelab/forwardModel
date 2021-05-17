@@ -40,7 +40,7 @@ datats = data(vx,:)';
 datats = obj.clean(datats);
 
 % Flatten the dataTime matrix
-[flatDataTime, dataTimeBreaks] = accumTimeMatrix(obj.dataTime, obj.dataDeltaT);
+[flatDataTime, dataTimeBreaks] = accumTimeMatrix(obj.dataTime,obj.dataAcqGroups,obj.dataDeltaT);
 
 % Obtain the model fit and hrf
 [modelts, hrf] = obj.forward(results.params(vxs(vx),:));
@@ -64,10 +64,10 @@ dim = [.15 .5 .3 .4];
 annotation('textbox',dim,'String',outString,'FitBoxToText','on');
 
 % If there are multiple acquisitions, place vertical lines at the breaks
-if length(dataTimeBreaks) > 1
+if length(dataTimeBreaks) > 2
     yl = ylim();
-    for ii=1:length(dataTimeBreaks)-1
-    plot([dataTimeBreaks(ii) dataTimeBreaks(ii)],yl,'-b');
+    for ii=2:length(dataTimeBreaks)-1
+    plot([dataTimeBreaks(ii) dataTimeBreaks(ii)],yl,'-k');
     end
 end
 

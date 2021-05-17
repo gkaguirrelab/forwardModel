@@ -42,7 +42,7 @@ datats = data(vx,:)';
 datats = obj.clean(datats);
 
 % Flatten the dataTime matrix
-[flatDataTime, dataTimeBreaks] = accumTimeMatrix(obj.dataTime, obj.dataDeltaT);
+[flatDataTime, dataTimeBreaks] = accumTimeMatrix(obj.dataTime,obj.dataAcqGroups,obj.dataDeltaT);
 
 % Obtain the model fit and hrf
 modelts = obj.forward(results.params(vxs(vx),:));
@@ -60,10 +60,10 @@ ylabel('BOLD signal');
 title(['Best fit time-series, CIFTI vertex ' num2str(vxs(vx))]);
 
 % If there are multiple acquisitions, place vertical lines at the breaks
-if length(dataTimeBreaks) > 1
+if length(dataTimeBreaks) > 2
     yl = ylim();
-    for ii=1:length(dataTimeBreaks)-1
-    plot([dataTimeBreaks(ii) dataTimeBreaks(ii)],yl,'-b');
+    for ii=2:length(dataTimeBreaks)-1
+    plot([dataTimeBreaks(ii) dataTimeBreaks(ii)],yl,'-k');
     end
 end
 
@@ -99,9 +99,9 @@ ylabel('BOLD signal');
 title(['Median quality fit time-series, CIFTI vertex ' num2str(vxs(vx))]);
 
 % If there are multiple acquisitions, place vertical lines at the breaks
-if length(dataTimeBreaks) > 1
+if length(dataTimeBreaks) > 2
     yl = ylim();
-    for ii=1:length(dataTimeBreaks)-1
+    for ii=2:length(dataTimeBreaks)-1
     plot([dataTimeBreaks(ii) dataTimeBreaks(ii)],yl,'-k');
     end
 end
