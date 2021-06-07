@@ -339,6 +339,7 @@ parfor ii=1:nVxs
     [~,bestSeedIdx] = max(seedMetric);
     parParams(ii,:) = seedParams(bestSeedIdx,:);
     parMetric(ii) = seedMetric(bestSeedIdx);
+    parfVal(ii) = myObj(seedParams(bestSeedIdx,:));
     
 end
 
@@ -362,6 +363,7 @@ if p.Results.averageVoxels
     % Expand the params and metric out to all of vxs
     parParams = repmat(parParams,length(fullVxs),1);
     parMetric = repmat(parMetric,length(fullVxs),1);
+    parfVal = repmat(parfVal,length(fullVxs),1);
     vxs = fullVxs;
 end
 
@@ -371,11 +373,14 @@ params(vxs,:) = parParams;
 clear parParams
 metric = nan(totalVxs,1);
 metric(vxs) = parMetric;
+fVal = nan(totalVxs,1);
+fVal(vxs) = parfVal;
 clear parMetric;
 
 
 %% Prepare the results variable
 results = model.results(params, metric);
+results.fVal = fVal;
 
 % Add the model information
 results.model.class = p.Results.modelClass;
