@@ -21,7 +21,7 @@ function fVal = objective(obj, signal, x)
 %
 
 % Implement an L2 norm
-fVal = norm(signal - obj.forward(x));
+fVal = std(signal - obj.forward(x));
 
 end
 
