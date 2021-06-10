@@ -22,6 +22,7 @@ function results = plot(obj, data, results)
 %
 
 %% Figure 1
+% A plot of the raw-time series fit
 
 % Define some variables
 vxs = results.meta.vxs;          % vector of analyzed vertices / voxels
@@ -71,9 +72,10 @@ if length(dataTimeBreaks) > 2
     end
 end
 
-% Plot the HRF
+% Plot the first 30 seconds of the HRF shape
 subplot(1,10,10)
-plot(0:obj.dataDeltaT:(length(hrf)-1)*obj.dataDeltaT,hrf)
+hrfTimeBase = 0:obj.dataDeltaT:30;
+plot(hrfTimeBase,hrf(1:length(hrfTimeBase)))
 xlabel('Time [seconds]');
 title('HRF');
 
@@ -86,6 +88,40 @@ if results.meta.averageVoxels
     results.datats = datats;
     results.modelts = modelts;
     results.hrf = hrf;
+end
+
+
+%% Figure 2
+% A plot of the average time-series (if called for)
+if ~isempty(obj.avgAcqIdx)
+    
+    % Obtain the average signal and model fit
+    [metric, signal, modelFit] = obj.metric(datats, results.params(vxs(vx),:));
+    
+    % Setup a figure
+    fig2 = figure('visible','off');
+    set(fig2,'PaperOrientation','landscape');
+    set(fig2,'PaperUnits','normalized');
+    set(gcf,'Units','points','Position',[500 500 1500 300]);
+    
+    
+    % Plot the time series
+    plot(flatDataTime(1:length(signal)),signal,'-','Color',[0.75 0.75 0.75],'LineWidth',2);
+    hold on;
+    plot(flatDataTime(1:length(signal)),modelFit,'-r','LineWidth',1);
+    xlabel('Time [seconds]');
+    ylabel('BOLD signal');
+    title(['Fit to average time series, n=' num2str(length(vxs)) ' vertices']);
+    
+    % Add an annotation to report the R^2 fit
+    outString = sprintf('R^{2} = %2.2f',metric);
+    dim = [.15 .5 .3 .4];
+    annotation('textbox',dim,'String',outString,'FitBoxToText','on');
+    
+    % Store the figure contents in a variable
+    results.figures.fig2 = returnFigVar(fig2);
+    results.figures.fig2.format = '-dpdf';
+    
 end
 
 end

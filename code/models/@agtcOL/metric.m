@@ -1,8 +1,8 @@
-function metric = metric(obj, signal, x)
+function [metric, signal, modelFit] = metric(obj, signal, x)
 % Evaluates the match between a signal and a model fit
 %
 % Syntax:
-%   metric = obj.metric(signal, x)
+%   [metric, signal, modelFit] = metric(obj, signal, x)
 %
 % Description:
 %   Given a time series signal and the parameters of the forward model,
@@ -27,10 +27,7 @@ if any(idx)
     % Obtain the modeled attention effect
     xSub = x;
     xSub(~idx)=0;
-    confoundModel = obj.forward(xSub);
-    
-    % Remove these effects from the signal
-    [~,~,signal] = regress(signal,confoundModel);
+    signal = signal - obj.forward(xSub);
     
     % Remove the attention task from the model going forward
     x(idx)=0;
@@ -40,7 +37,17 @@ end
 modelFit = obj.forward(x);
 
 % Average across acquisition repetitions
-
+avgAcqIdx = obj.avgAcqIdx;
+if ~isempty(avgAcqIdx)
+    avgSignal = zeros(length(avgAcqIdx{1}),1);
+    avgModelFit = zeros(length(avgAcqIdx{1}),1);
+    for ii = 1:length(avgAcqIdx)
+        avgSignal = avgSignal + signal(avgAcqIdx{ii});
+        avgModelFit = avgModelFit + modelFit(avgAcqIdx{ii});
+    end
+    signal = avgSignal ./ length(avgAcqIdx);
+    modelFit = avgModelFit ./ length(avgAcqIdx);
+end
 
 % Implement an R^2 metric
 metric = calccorrelation(signal, modelFit)^2;

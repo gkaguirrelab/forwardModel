@@ -56,14 +56,19 @@ classdef agtcOL < handle
         %	[totalST x*y]
         stimulus
         
-        % A set of labels for the stimuli, used to label maps and the
-        % result fields
+        % A cell array of labels for the stimuli, used to label maps and
+        % the result fields
         stimLabels
         
         % A particular stimulus label that corresponds to events that we
         % wish to regress out of the time-series prior to averaging across
         % acquisitions.
         confoundStimLabel
+
+        % A cell array of vectors, each of which contains the indices that
+        % are used to average together the timeseries data and model fit
+        % across sets of acquisitions
+        avgAcqIdx
         
         % A vector of length totalST x 1 that has an index value to
         % indicate which acquisition (1, 2, 3 ...) a stimulus time
@@ -131,7 +136,8 @@ classdef agtcOL < handle
             p.addParameter('stimTime',{},@iscell);
             p.addParameter('stimLabels',{},@iscell);
             p.addParameter('payload',{},@iscell);
-            p.addParameter('confoundStimLabel','',@iscell);
+            p.addParameter('confoundStimLabel','',@ischar);
+            p.addParameter('avgAcqIdx',{},@iscell);  
             p.addParameter('polyDeg',[],@isnumeric);
             p.addParameter('typicalGain',300,@isscalar);
             p.addParameter('hrfType','flobs',@ischar);            
@@ -164,7 +170,7 @@ classdef agtcOL < handle
             if ~isempty(p.Results.stimLabels)
                 stimLabels = p.Results.stimLabels;
                 if length(stimLabels) ~= nStimTypes
-                    error('forwardModelObj:badStimLabels','the stimLabels value must be a cell array equal to the number of stimulus types.');
+                    error('forwardModelObj:badStimLabels','The stimLabels value must be a cell array equal to the number of stimulus types.');
                 end
             else
                 stimLabels = cell(1,nStimTypes);
@@ -173,6 +179,25 @@ classdef agtcOL < handle
                 end
             end
             obj.stimLabels = stimLabels;
+            
+            % Check the confoundStimLabel
+            obj.confoundStimLabel = p.Results.confoundStimLabel;
+            if ~isempty(obj.confoundStimLabel)
+                if ~any(strcmp(obj.confoundStimLabel,obj.stimLabels))
+                    error('forwardModelObj:badConfoundStimLabel','The confoundStimLabel must be present within the stimLabels array.');
+                end
+            end
+            
+            % Sanity check the avgAcqIdx
+            obj.avgAcqIdx = p.Results.avgAcqIdx;
+            if ~isempty(obj.avgAcqIdx)
+                if length(unique(cellfun(@(x) length(x),foo))) > 1
+                    error('forwardModelObj:badAvgAcqIdx','The avgAcqIdx cell array must have vectors of equal length.');
+                end
+                if sum(cellfun(@(x) length(x),foo)) ~= length(obj.dataTime)
+                    error('forwardModelObj:badAvgAcqIdx','The total length of the indices in avgAcqIdx cell array must be equal to the total data length.');
+                end
+            end
             
             % Define the fix and float param sets
             if p.Results.hrfSearch
@@ -267,7 +292,7 @@ classdef agtcOL < handle
         [c, ceq] = nonlcon(obj, x)
         fVal = objective(obj, signal, x)
         [fit, hrf] = forward(obj, x)
-        metric = metric(obj, signal, x)
+        [metric, signal, modelFit] = metric(obj, signal, x)
         seeds = seeds(obj, data, vxs)
         results = results(obj, params, metric)
         results = plot(obj, data, results)
