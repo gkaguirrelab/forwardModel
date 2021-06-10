@@ -191,10 +191,10 @@ classdef agtcOL < handle
             % Sanity check the avgAcqIdx
             obj.avgAcqIdx = p.Results.avgAcqIdx;
             if ~isempty(obj.avgAcqIdx)
-                if length(unique(cellfun(@(x) length(x),foo))) > 1
+                if length(unique(cellfun(@(x) length(x),obj.avgAcqIdx))) > 1
                     error('forwardModelObj:badAvgAcqIdx','The avgAcqIdx cell array must have vectors of equal length.');
                 end
-                if sum(cellfun(@(x) length(x),foo)) ~= length(obj.dataTime)
+                if sum(cellfun(@(x) length(x),obj.avgAcqIdx)) ~= length(obj.dataTime)
                     error('forwardModelObj:badAvgAcqIdx','The total length of the indices in avgAcqIdx cell array must be equal to the total data length.');
                 end
             end
