@@ -74,7 +74,7 @@ end
 
 % Plot the first 30 seconds of the HRF shape
 subplot(1,10,10)
-hrfTimeBase = 0:obj.dataDeltaT:30;
+hrfTimeBase = 0:obj.stimDeltaT:30;
 plot(hrfTimeBase,hrf(1:length(hrfTimeBase)))
 xlabel('Time [seconds]');
 title('HRF');
