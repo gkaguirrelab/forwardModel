@@ -273,7 +273,7 @@ warningState = warning;
 
 %% Loop through the voxels/vertices in vxs
 
-for ii=1:nVxs
+parfor ii=1:nVxs
     
     % Silence warnings if so instructed. This must be done inside the par
     % loop to apply to each worker.
