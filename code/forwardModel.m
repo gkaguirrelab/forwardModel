@@ -298,7 +298,7 @@ parfor ii=1:nVxs
     
     % Pre-allocate the seed search result variables to keep par happy
     seedParams = nan(length(seeds),model.nParams);
-    seedMetric = nan(length(seeds),1);
+    seedFval = nan(length(seeds),1);
     
     % Loop over seed sets
     for ss = 1:length(seeds)
@@ -331,15 +331,15 @@ parfor ii=1:nVxs
         % Store the final params
         seedParams(ss,:) = x0;
         
-        % Evaluate the model metric
-        seedMetric(ss) = model.metric(datats,x0);
+        % Evaluate the objective at the final stage
+        seedFval(ss) = myObj(x0);
     end
     
     % Retain the best result across seeds
-    [~,bestSeedIdx] = max(seedMetric);
+    [~,bestSeedIdx] = min(seedFval);
     parParams(ii,:) = seedParams(bestSeedIdx,:);
-    parMetric(ii) = seedMetric(bestSeedIdx);
-    parfVal(ii) = myObj(seedParams(bestSeedIdx,:));
+    parMetric(ii) = model.metric(datats,seedParams(bestSeedIdx,:));
+    parfVal(ii) = seedFval(bestSeedIdx);
     
 end
 
