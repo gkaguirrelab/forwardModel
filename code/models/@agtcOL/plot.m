@@ -112,8 +112,12 @@ if ~isempty(obj.avgAcqIdx)
     plot(flatDataTime(1:length(signal)),modelFit,'-r','LineWidth',1);
     xlabel('Time [seconds]');
     ylabel('BOLD signal');
-    title(['Fit to average time series, n=' num2str(length(vxs)) ' vertices']);
-    
+    if results.meta.averageVoxels
+        title(['Fit to average time series, n=' num2str(length(vxs)) ' vertices']);
+    else
+        title(['Best fit time-series, CIFTI vertex ' num2str(vxs(vx))]);
+    end
+
     % Add an annotation to report the R^2 fit
     outString = sprintf('R^{2} = %2.2f',metric);
     dim = [.15 .5 .3 .4];
