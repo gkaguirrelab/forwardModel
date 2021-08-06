@@ -326,7 +326,7 @@ for ii=1:nVxs
                 nonlcon, options{bb});
             
             % Update the x0 guess
-            x0 = model.update(x,x0, floatSet);
+            x0 = model.update(x,x0,floatSet,datats);
 
         end
         
