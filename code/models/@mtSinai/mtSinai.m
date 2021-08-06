@@ -185,7 +185,7 @@ classdef mtSinai < handle
             % Check the confoundStimLabel
             obj.confoundStimLabel = p.Results.confoundStimLabel;
             if ~isempty(obj.confoundStimLabel)
-                if ~any(strcmp(obj.confoundStimLabel,obj.stimLabels))
+                if ~any(startsWith(obj.stimLabels,obj.confoundStimLabel))
                     error('forwardModelObj:badConfoundStimLabel','The confoundStimLabel must be present within the stimLabels array.');
                 end
             end
