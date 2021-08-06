@@ -273,7 +273,7 @@ warningState = warning;
 
 %% Loop through the voxels/vertices in vxs
 
-parfor ii=1:nVxs
+for ii=1:nVxs
     
     % Silence warnings if so instructed. This must be done inside the par
     % loop to apply to each worker.
@@ -281,6 +281,7 @@ parfor ii=1:nVxs
         warning('off','MATLAB:singularMatrix');
         warning('off','MATLAB:nearlySingularMatrix');
         warning('off','MATLAB:illConditionedMatrix');
+        warning('off','MATLAB:rankDeficientMatrix');
     end
 
     % Update progress bar
@@ -318,14 +319,15 @@ parfor ii=1:nVxs
             
             % Define an anonymous function as an objective
             myObj = @(x) model.objective(datats,(xSort{bb}([x x0(fixSet)])));
-            
+                        
             % Call the non-linear fit function
             x = fmincon(myObj,x0(floatSet),[],[],[],[], ...
                 lb(floatSet),ub(floatSet), ...
                 nonlcon, options{bb});
             
             % Update the x0 guess
-            x0(model.floatSet{bb}) = x;
+            x0 = model.update(x,x0, floatSet);
+
         end
         
         % Store the final params
