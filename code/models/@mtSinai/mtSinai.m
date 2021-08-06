@@ -1,9 +1,9 @@
-classdef agtcOL < handle
+classdef mtSinai < handle
     
     properties (Constant)
         
         % Properties of the search stages.
-        nStages = 1;
+        nStages = 2;
         
         % A description of the model
         description = ...
@@ -25,7 +25,10 @@ classdef agtcOL < handle
         
         % The projection matrix used to regress our nuisance effects
         T
-        
+
+        % The current state of the regression matrix
+        X
+
     end
     
     % Calling function can see, but not modify
@@ -123,7 +126,7 @@ classdef agtcOL < handle
     methods
         
         % Constructor
-        function obj = agtcOL(data,stimulus,tr,varargin)
+        function obj = mtSinai(data,stimulus,tr,varargin)
             
             % instantiate input parser
             p = inputParser; p.KeepUnmatched = false;
@@ -139,9 +142,8 @@ classdef agtcOL < handle
             p.addParameter('confoundStimLabel','',@ischar);
             p.addParameter('avgAcqIdx',{},@iscell);  
             p.addParameter('polyDeg',[],@isnumeric);
-            p.addParameter('typicalGain',300,@isscalar);
+            p.addParameter('typicalGain',1,@isscalar);
             p.addParameter('hrfType','flobs',@ischar);            
-            p.addParameter('hrfSearch',true,@islogical);            
             p.addParameter('verbose',true,@islogical);
             
             % parse
@@ -183,7 +185,7 @@ classdef agtcOL < handle
             % Check the confoundStimLabel
             obj.confoundStimLabel = p.Results.confoundStimLabel;
             if ~isempty(obj.confoundStimLabel)
-                if ~any(strcmp(obj.confoundStimLabel,obj.stimLabels))
+                if ~any(startsWith(obj.stimLabels,obj.confoundStimLabel))
                     error('forwardModelObj:badConfoundStimLabel','The confoundStimLabel must be present within the stimLabels array.');
                 end
             end
@@ -200,13 +202,10 @@ classdef agtcOL < handle
             end
             
             % Define the fix and float param sets
-            if p.Results.hrfSearch
-                obj.floatSet = {1:obj.nParams};
-                obj.fixSet = {[]};
-            else
-                obj.floatSet = {1:obj.nParams-3};
-                obj.fixSet = {obj.nParams-2:obj.nParams};
-            end
+            % In this model, only the HRF parameters float. The gain
+            % parameters are derived by regression
+            obj.fixSet = {1:obj.nParams-3, 1:obj.nParams-3};
+            obj.floatSet = {obj.nParams-2:obj.nParams, obj.nParams-2:obj.nParams};
             
             % Create the stimAcqGroups variable. Concatenate the cells and
             % store in the object.
@@ -278,10 +277,7 @@ classdef agtcOL < handle
             
             % Create and cache the projection matrix
             obj.genprojection;
-            
-            % Call the forward model to create and store an initial hrf
-            obj.forward(obj.initial);
-            
+                        
             
         end
         
@@ -297,6 +293,7 @@ classdef agtcOL < handle
         seeds = seeds(obj, data, vxs)
         results = results(obj, params, metric)
         results = plot(obj, data, results)
+        X = hrfX(obj,x)
         
         % Internal methods
         genflobsbasis(obj);

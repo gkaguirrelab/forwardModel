@@ -201,6 +201,7 @@ classdef glm < handle
         [c, ceq] = nonlcon(obj, x)
         fVal = objective(obj, signal, x)
         [fit, hrf] = forward(obj, x)
+        x0 = update(obj,x,x0,floatSet,signal)
         metric = metric(obj, signal, x)
         seeds = seeds(obj, data, vxs)
         results = results(obj, params, metric)
