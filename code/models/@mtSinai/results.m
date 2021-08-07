@@ -25,17 +25,17 @@ function results = results(obj, params, metric)
 
 
 
-% Map params and metric to a results structure
+% Map metric to a results structure
 results.R2 = metric;
+
+% Add the R2 map
+results.meta.mapField{1} = 'R2';
+results.meta.mapScale{1} = 'grayRed';
+results.meta.mapLabel{1} = 'R^2';
+results.meta.mapBounds{1} = [0 0.25];
 
 % Add the params themselves
 results.params = params;
-
-% Add the R2 map
-results.meta.mapField{nParams-2} = 'R2';
-results.meta.mapScale{nParams-2} = 'grayRed';
-results.meta.mapLabel{nParams-2} = 'R^2';
-results.meta.mapBounds{nParams-2} = [0 0.25];
 
 
 end
