@@ -31,19 +31,6 @@ results.R2 = metric;
 % Add the params themselves
 results.params = params;
 
-% Get the stimLabels
-stimLabels = obj.stimLabels;
-
-% Save each beta value to a separate field
-nParams = obj.nParams;
-for pp = 1:nParams-3
-    results.meta.mapField{pp} = stimLabels{pp};
-    results.meta.mapScale{pp} = 'blueRed';
-    results.meta.mapLabel{pp} = stimLabels{pp};
-    results.meta.mapBounds{pp} = [nanmin(params(:,pp)) nanmax(params(:,pp))];
-    results.(stimLabels{pp}) = params(:,pp);
-end
-
 % Add the R2 map
 results.meta.mapField{nParams-2} = 'R2';
 results.meta.mapScale{nParams-2} = 'grayRed';
