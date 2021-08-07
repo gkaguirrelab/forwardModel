@@ -86,9 +86,9 @@ results.figures.fig1.format = '-dpdf';
 
 % If averageVoxels is true, save the data, model fit, and hrf
 if results.meta.averageVoxels
-    results.datats = datats;
-    results.modelts = modelts;
-    results.hrf = hrf;
+    results.data.datats = datats;
+    results.data.modelts = modelts;
+    results.data.hrf = hrf;
 end
 
 
@@ -127,6 +127,13 @@ if ~isempty(obj.avgAcqIdx)
     results.figures.fig2 = returnFigVar(fig2);
     results.figures.fig2.format = '-dpdf';
     
+    % If averageVoxels is true, save the signal and modelFit
+    if results.meta.averageVoxels
+        results.data.avgSignal = signal;
+        results.data.avgModelFit = modelFit;
+    end
+    
+
 end
 
 end
