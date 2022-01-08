@@ -297,9 +297,10 @@ parfor ii=1:nVxs
     % nuisance components
     datats = model.clean(datats);
     
-    % Pre-allocate the seed search result variables to keep par happy
+    % Pre-allocate some variables to keep par happy
     seedParams = nan(length(seeds),model.nParams);
     seedFval = nan(length(seeds),1);
+    myObj = [];
     
     % Loop over seed sets
     for ss = 1:length(seeds)
@@ -398,6 +399,7 @@ results.model.payload =  p.Results.modelPayload;
 results.meta.vxs = vxs;
 results.meta.tr = p.Results.tr;
 results.meta.averageVoxels = p.Results.averageVoxels;
+results.meta.datetime = datetime();
 
 % Add plots to the results
 results = model.plot(data, results);
