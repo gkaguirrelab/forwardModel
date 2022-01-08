@@ -1,14 +1,12 @@
-%% mtSinai
-%
-% This model was used to analyze the temporal sensitivity data collected at
-% the Mt Sinai 7T scanner, and reported in Patterson et al,. 2022.
+%% demo_mtSinai
 %
 % The model simultaneously fits the shape of the HRF (using the FLOBS
 % components), and the neural amplitude parameters for a conventional
 % linear model. The model minimizes the L2 norm of the model fit.
 %
-% The model accepts several key-values, which are used to
-% create a nuanced metric value. These key-values include:
+% The model accepts several key-values, which are used to create a nuanced
+% metric value. While this is not used in fitting the model, this output
+% may be useful in subsequent analyses. These key-values are:
 %
 %   stimLabels    - A cell array of char vectors, one for each row of the
 %                   stimulus matrix.
@@ -38,6 +36,10 @@
 % In the context of the temporal sensitivity experiment, this model was
 % used to remove the effect of an attention event when judging the
 % explanatory power of the time-series model fit.
+%
+% This model was used to analyze the temporal sensitivity data collected at
+% the Mt Sinai 7T scanner, and reported in Patterson et al,. 2022.
+%
 
 
 % Simulate an experiment with 7 conditions (6 plus an "baseline"). A given
