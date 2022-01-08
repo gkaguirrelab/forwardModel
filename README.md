@@ -12,7 +12,7 @@ This framework uses several utility functions from Kendrick Kay's analyzePRF too
 
 	https://github.com/kendrickkay/analyzePRF
 
-The pRF modelClass draws from Kendrickks' code in the approach to creating seeds, and the inclusion of a compressive non-linearity in the modeled neural response, which is taken from:
+The pRF modelClass draws from Kendricks' code in the approach to creating seeds, and the inclusion of a compressive non-linearity in the modeled neural response, which is taken from:
 
   Kay KN, Winawer J, Mezer A and Wandell BA (2013) Compressive spatial summation in human visual cortex. J. Neurophys. doi: 10.1152/jn.00105.2013
 
