@@ -145,7 +145,7 @@ totalVxs = size(data{1},1);
 
 % Define vxs (the voxel/vertex set to process)
 if isempty(p.Results.vxs)
-    vxs = 1:length(totalVxs);
+    vxs = 1:totalVxs;
 else
     vxs = p.Results.vxs;
 end
