@@ -22,15 +22,17 @@ function [metric, signal, modelFit] = metric(obj, signal, x)
 % Filter the signal to remove the attention task (if one is present)
 stimLabels = obj.stimLabels;
 confoundStimLabel = obj.confoundStimLabel;
-idx = startsWith(stimLabels,confoundStimLabel);
-if any(idx)
-    % Obtain the modeled attention effect
-    xSub = x;
-    xSub(~idx)=0;
-    signal = signal - obj.forward(xSub);
-    
-    % Remove the attention task from the model going forward
-    x(idx)=0;
+if ~isempty(confoundStimLabel)
+    idx = startsWith(stimLabels,confoundStimLabel);
+    if any(idx)
+        % Obtain the modeled attention effect
+        xSub = x;
+        xSub(~idx)=0;
+        signal = signal - obj.forward(xSub);
+
+        % Remove the attention task from the model going forward
+        x(idx)=0;
+    end
 end
 
 % Obtain the model fit
