@@ -53,9 +53,9 @@ hrf = obj.hrf;
 
 % Plot the time series
 subplot(2,5,1:4)
-plot(flatDataTime,datats,'r-');
+plot(flatDataTime,datats,'-','Color',[0.75 0.75 0.75],'LineWidth',2);
 hold on;
-plot(flatDataTime,modelts,'b-');
+plot(flatDataTime,modelts,'-r','LineWidth',1);
 xlabel('Time [seconds]');
 ylabel('BOLD signal');
 title(['Best fit time-series, CIFTI vertex ' num2str(vxs(vx))]);
