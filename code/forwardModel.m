@@ -298,8 +298,8 @@ parfor ii=1:nVxs
     datats = model.clean(datats);
     
     % Pre-allocate some variables to keep par happy
-    seedParams = nan(length(seeds),model.nParams);
-    seedFval = nan(length(seeds),1);
+    seedParams = nan(size(seeds,1),model.nParams);
+    seedFval = nan(size(seeds,1),1);
     myObj = [];
     
     % Loop over seed sets
@@ -307,6 +307,13 @@ parfor ii=1:nVxs
         
         % Grab a seed to start the parameter search
         x0 = seeds{ss}(vxs(ii),:);
+
+        % Some models have zero stages, as they just accept the seeds as
+        % the solution. Detect this case and define an objective function
+        % for later
+        if model.nStages == 0
+            myObj = @(x) model.objective(datats,x);
+        end
 
         % Loop over model stages
         for bb = 1:model.nStages
