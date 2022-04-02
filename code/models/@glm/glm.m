@@ -45,6 +45,20 @@ classdef glm < handle
         %	[totalST x*y]
         stimulus
         
+        % A cell array of labels for the stimuli, used to label maps and
+        % the result fields
+        stimLabels
+        
+        % A particular stimulus label that corresponds to events that we
+        % wish to regress out of the time-series prior to averaging across
+        % acquisitions.
+        confoundStimLabel
+
+        % A cell array of vectors, each of which contains the indices that
+        % are used to average together the timeseries data and model fit
+        % across sets of acquisitions
+        avgAcqIdx
+
         % A vector of length totalST x 1 that has an index value to
         % indicate which acquisition (1, 2, 3 ...) a stimulus time
         % sample is from.
@@ -103,6 +117,9 @@ classdef glm < handle
             p.addParameter('payload',{},@iscell);
             p.addParameter('polyDeg',[],@isnumeric);
             p.addParameter('hrfParams',[0.86 0.09 0.01],@isvector);
+            p.addParameter('stimLabels',{},@iscell);
+            p.addParameter('confoundStimLabel','',@ischar);
+            p.addParameter('avgAcqIdx',{},@iscell);  
             p.addParameter('verbose',true,@islogical);
             
             % parse
@@ -110,14 +127,14 @@ classdef glm < handle
             
             % Create the dataTime and dataAcqGroups variables
             % Concatenate and store in the object.
-            for ii=1:length(data)
+            for ii=1:length(data)                
                 dataAcqGroups{ii} = ii*ones(size(data{ii},2),1);
-                dataTime{ii} = 0:tr:tr*(size(data{ii},2)-1);
+                dataTime{ii} = (0:tr:tr*(size(data{ii},2)-1))';
             end
             obj.dataAcqGroups = catcell(1,dataAcqGroups);
             obj.dataTime = catcell(1,dataTime);
-            obj.dataDeltaT = tr;
-            clear data
+            obj.dataDeltaT = tr;            
+            clear data            
             
             % Each row in the stimulus is a different stim type that will
             % be fit with its own gain parameter. Record how many there are
@@ -125,7 +142,40 @@ classdef glm < handle
             
             % The number of params is the number of stim types
             obj.nParams = nStimTypes;
+
+            % Define the stimLabels
+            if ~isempty(p.Results.stimLabels)
+                stimLabels = p.Results.stimLabels;
+                if length(stimLabels) ~= nStimTypes
+                    error('forwardModelObj:badStimLabels','The stimLabels value must be a cell array equal to the number of stimulus types.');
+                end
+            else
+                stimLabels = cell(1,nStimTypes);
+                for pp = 1:nStimTypes
+                    stimLabels{pp} = sprintf('beta%02d',pp);
+                end
+            end
+            obj.stimLabels = stimLabels;
             
+            % Check the confoundStimLabel
+            obj.confoundStimLabel = p.Results.confoundStimLabel;
+            if ~isempty(obj.confoundStimLabel)
+                if ~any(startsWith(obj.stimLabels,obj.confoundStimLabel))
+                    error('forwardModelObj:badConfoundStimLabel','The confoundStimLabel must be present within the stimLabels array.');
+                end
+            end
+            
+            % Sanity check the avgAcqIdx
+            obj.avgAcqIdx = p.Results.avgAcqIdx;
+            if ~isempty(obj.avgAcqIdx)
+                if length(unique(cellfun(@(x) length(x),obj.avgAcqIdx))) > 1
+                    error('forwardModelObj:badAvgAcqIdx','The avgAcqIdx cell array must have vectors of equal length.');
+                end
+                if sum(cellfun(@(x) length(x),obj.avgAcqIdx)) ~= length(obj.dataTime)
+                    error('forwardModelObj:badAvgAcqIdx','The total length of the indices in avgAcqIdx cell array must be equal to the total data length.');
+                end
+            end
+
             % Create the stimAcqGroups variable. Concatenate the cells and
             % store in the object.
             for ii=1:length(stimulus)
@@ -202,7 +252,7 @@ classdef glm < handle
         fVal = objective(obj, signal, x)
         [fit, hrf] = forward(obj, x)
         x0 = update(obj,x,x0,floatSet,signal)
-        metric = metric(obj, signal, x)
+        [metric, signal, modelFit] = metric(obj, signal, x)
         seeds = seeds(obj, data, vxs)
         results = results(obj, params, metric)
         results = plot(obj, data, results)
