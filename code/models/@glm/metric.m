@@ -1,4 +1,4 @@
-function metric = metric(obj, signal, x)
+function [metric, signal, modelFit] = metric(obj, signal, x)
 % Evaluates the match between a signal and a model fit
 %
 % Syntax:
@@ -19,8 +19,40 @@ function metric = metric(obj, signal, x)
 %   metric                - Scalar.
 %
 
+% Filter the signal to remove the confound event (if one is present)
+stimLabels = obj.stimLabels;
+confoundStimLabel = obj.confoundStimLabel;
+if ~isempty(confoundStimLabel)
+    idx = startsWith(stimLabels,confoundStimLabel);
+    if any(idx)
+        % Obtain the modeled confound effect
+        xSub = x;
+        xSub(~idx)=0;
+        signal = signal - obj.forward(xSub);
+
+        % Remove the confound event from the model going forward
+        x(idx)=0;
+    end
+end
+
+% Obtain the model fit
+modelFit = obj.forward(x);
+
+% Average across acquisition repetitions
+avgAcqIdx = obj.avgAcqIdx;
+if ~isempty(avgAcqIdx)
+    avgSignal = zeros(length(avgAcqIdx{1}),1);
+    avgModelFit = zeros(length(avgAcqIdx{1}),1);
+    for ii = 1:length(avgAcqIdx)
+        avgSignal = avgSignal + signal(avgAcqIdx{ii});
+        avgModelFit = avgModelFit + modelFit(avgAcqIdx{ii});
+    end
+    signal = avgSignal ./ length(avgAcqIdx);
+    modelFit = avgModelFit ./ length(avgAcqIdx);
+end
+
 % Implement an R^2 metric
-metric = calccorrelation(signal, obj.forward(x))^2;
+metric = calccorrelation(signal, modelFit)^2;
 
 end
 
