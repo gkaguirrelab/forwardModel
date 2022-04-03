@@ -30,6 +30,7 @@ nVxs = length(vxs);
 % Obj variables
 stimulus = obj.stimulus;
 stimAcqGroups = obj.stimAcqGroups;
+stimTime = obj.stimTime;
 verbose = obj.verbose;
 hrf = obj.hrf;
 
@@ -41,9 +42,25 @@ seedMatrix = repmat(x0,totalVxs,1);
 % HRF
 X = stimulus;
 for ss = 1:size(stimulus,2)
-    X(:,ss) = obj.clean(conv2run(stimulus(:,ss),hrf,stimAcqGroups));
+    X(:,ss) = conv2run(stimulus(:,ss),hrf,stimAcqGroups);
 end
 
+% If the stimTime variable is not empty, resample X to match the temporal
+% support of the data.
+if ~isempty(stimTime)
+    dataAcqGroups = obj.dataAcqGroups;
+    dataTime = obj.dataTime;
+    resampX = [];
+    for ss = 1:size(X,2)
+        resampX(:,ss) = resamp2run(X(:,ss),stimAcqGroups,stimTime,dataAcqGroups,dataTime);
+    end
+    X = resampX;
+end
+
+% Apply the cleaning step
+for ss = 1:size(stimulus,2)
+    X(:,ss) = obj.clean(X(:,ss));
+end
 
 % Store the warning state
 warningState = warning;
