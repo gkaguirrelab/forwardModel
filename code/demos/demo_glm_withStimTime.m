@@ -35,7 +35,7 @@ stimulus = {stimulus};
 
 % Instantiate the model. To do so, we need to create a data vector that is
 % the proper length.
-dummyData = {zeros(1,totalTime)};
+dummyData = {zeros(1,nTRs)};
 model = glm(dummyData, stimulus, tr, 'stimTime', stimTime);
 
 % Create simulated data with varying amplitudes of the events, and add some
