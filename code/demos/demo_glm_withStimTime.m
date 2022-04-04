@@ -14,7 +14,7 @@ nTRs = 420;
 totalTime = nTRs * tr;
 
 % define a stimulus that has different temporal support
-dT = 0.5;
+dT = 0.25;
 stimTime = ((1:totalTime / dT) - 1) * dT;
 
 % create stim regression matrix
