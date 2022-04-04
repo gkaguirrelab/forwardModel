@@ -75,7 +75,7 @@ function results = forwardModel(data,stimulus,tr,varargin)
 %                           results method in each model.
 %
 % Examples:
-%   See the "demo.m" files within each model
+%   See the files within the demo directory
 %
 
 
@@ -241,15 +241,17 @@ if verbose
     end
     
     % If we are in deployed code, issue infrequent progress bar updates, as
-    % each updated accumulates in the log.
+    % each update accumulates in the log.
     if isdeployed
         UpdateRate = 1/60;
         fprintf(['Updates every ' num2str(1/UpdateRate) ' seconds.\n']);
     else
         UpdateRate = 5;
     end
+
     % Define a directory where the progress bar update files are kept
     progLog = tempdir();
+    
     % Instantiate the progress bar object with the 'Parallel' switch set to
     % true and save the aux files in a system temporary directory.
     pbarObj = ProgressBar(nVxs, ...
