@@ -73,7 +73,9 @@ end
 
 % Plot the HRF
 subplot(1,10,10)
-plot(0:obj.dataDeltaT:(length(hrf)-1)*obj.dataDeltaT,hrf)
+hrfTimeBase = 0:obj.stimDeltaT:30;
+maxLength = min([length(hrfTimeBase) length(hrf)]);
+plot(hrfTimeBase(1:maxLength), hrf(1:maxLength))
 xlabel('Time [seconds]');
 title('HRF');
 
