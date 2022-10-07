@@ -110,6 +110,7 @@ classdef mtSinai < handle
         % The lower and upper bounds for the model
         lb
         ub
+        paraSD
         
         % A vector, equal in length to the number of parameters, that
         % specifies the smallest step size that fmincon will take for each
@@ -143,6 +144,7 @@ classdef mtSinai < handle
             p.addParameter('avgAcqIdx',{},@iscell);  
             p.addParameter('polyDeg',[],@isnumeric);
             p.addParameter('typicalGain',1,@isscalar);
+            p.addParameter('paraSD',15,@isscalar);
             p.addParameter('hrfType','flobs',@ischar);            
             p.addParameter('verbose',true,@islogical);
             
@@ -266,6 +268,7 @@ classdef mtSinai < handle
             obj.payload = p.Results.payload;
             obj.polyDeg = p.Results.polyDeg;
             obj.typicalGain = p.Results.typicalGain;
+            obj.paraSD = p.Results.paraSD;
             obj.hrfType = p.Results.hrfType;
             obj.verbose = p.Results.verbose;
             
