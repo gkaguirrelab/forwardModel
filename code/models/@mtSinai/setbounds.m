@@ -43,12 +43,12 @@ switch obj.hrfType
         mu = obj.mu;
         C = obj.C;
         
-        % Set bounds at +-15SDs of the norm distributions of the FLOBS
-        % parameters
-        sd15 = 15*diag(C)';
+        % Set bounds at +- n * SDs of the norm distributions of the FLOBS
+        % parameters, default n = 15
+        sdBound = obj.paraSD * diag(C)';
         
-        lb(nParams-2:nParams) = mu-sd15;	% FLOBS eigen1, 2, 3
-        ub(nParams-2:nParams) = mu+sd15;	% FLOBS eigen1, 2, 3
+        lb(nParams-2:nParams) = mu-sdBound;	% FLOBS eigen1, 2, 3
+        ub(nParams-2:nParams) = mu+sdBound;	% FLOBS eigen1, 2, 3
 
     case 'gamma'
         lb(nParams-2:nParams) = [2 6 0];	% Gamma1,2, and undershoot gain
