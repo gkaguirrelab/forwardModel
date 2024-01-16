@@ -274,7 +274,6 @@ warningState = warning;
 
 
 %% Loop through the voxels/vertices in vxs
-
 parfor ii=1:nVxs
     
     % Silence warnings if so instructed. This must be done inside the par
@@ -344,7 +343,7 @@ parfor ii=1:nVxs
         seedParams(ss,:) = x0;
         
         % Evaluate the objective at the final stage
-        seedFval(ss) = myObj(x0);
+        seedFval(ss) = model.objective(datats,x0);
     end
     
     % Retain the best result across seeds
