@@ -62,6 +62,11 @@ for ss = 1:size(stimulus,2)
         dataTime = obj.dataTime;
         fit = resamp2run(fit,stimAcqGroups,stimTime,dataAcqGroups,dataTime);
     end
+
+    % Restore the DC component for neural signals with a sum of zero
+    if abs(sum(neuralSignal)) < 1e-6
+        fit = fit - mean(fit);
+    end
     
     % Apply the cleaning step
     fit = obj.clean(fit);
