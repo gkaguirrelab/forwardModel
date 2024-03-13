@@ -13,7 +13,7 @@ for ii=1:max(stimAcqGroups)
     acqSignal = interp1(acqStimTime, signalIn(stimAcqGroups==ii),acqDataTime,'linear',0);
     
     % Add this to the growing output fit variable
-    signalOut((ii-1)*length(acqSignal)+1:(ii-1)*length(acqSignal)+length(acqSignal)) = acqSignal;
+    signalOut(dataAcqGroups==ii) = acqSignal;
 end
 
 % Return in column order
