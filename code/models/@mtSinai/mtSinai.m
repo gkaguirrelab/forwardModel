@@ -72,6 +72,14 @@ classdef mtSinai < handle
         % are used to average together the timeseries data and model fit
         % across sets of acquisitions
         avgAcqIdx
+
+        % A cell array of matrices, with the number of cells equal to the
+        % numner of acquisitions. Each matrix is passed with the dimension
+        % n x t, where t is the number of trs in that acquisition, and n is
+        % the number of nuisance covariates that have been passed. The
+        % matrix is subsequently transposed for storage in the obj
+        % variable.
+        nuisanceVars
         
         % A vector of length totalST x 1 that has an index value to
         % indicate which acquisition (1, 2, 3 ...) a stimulus time
@@ -143,6 +151,7 @@ classdef mtSinai < handle
             p.addParameter('confoundStimLabel','',@ischar);
             p.addParameter('avgAcqIdx',{},@iscell);  
             p.addParameter('polyDeg',[],@isnumeric);
+            p.addParameter('nuisanceVars',{},@iscell);  
             p.addParameter('typicalGain',1,@isscalar);
             p.addParameter('paraSD',15,@isscalar);
             p.addParameter('hrfType','flobs',@ischar);            
@@ -160,7 +169,6 @@ classdef mtSinai < handle
             obj.dataAcqGroups = catcell(1,dataAcqGroups);
             obj.dataTime = catcell(1,dataTime);
             obj.dataDeltaT = tr;
-            clear data
             
             % Each row in the stimulus is a different stim type that will
             % be fit with its own gain parameter. Record how many there are
@@ -259,7 +267,27 @@ classdef mtSinai < handle
                 if length(obj.stimTime) ~= length(obj.stimAcqGroups)
                     error('forwardModelObj:timeMismatch','The stimTime vectors are not equal in length to the stimuli');
                 end
+            end            
+
+            % Sanity check the nuisanceVars. There should be as many cells
+            % as there are acquisitions, and the lengh of each matrix in
+            % each cell should be equal to the number of TRs in each
+            % acquisition
+            nuisanceVars = p.Results.nuisanceVars;
+            if ~isempty(nuisanceVars)
+                if length(data) ~= length(nuisanceVars)
+                    error('forwardModelObj:dataMismatch','The nuisanceVars cells are not equal in length to the data cells');
+                end
+                for ii = 1:length(nuisanceVars)
+                    if size(nuisanceVars{ii},2) ~= size(data{ii},2)
+                        error('forwardModelObj:dataMismatch',sprintf('nuisanceVar matrix #%d has a number of TRs that differs with the data matrix',ii));
+                    end
+                    % Transpose rows and columns in the nuisanceVars for
+                    % later construction of the projection matrix
+                    nuisanceVars{ii} = nuisanceVars{ii}';
+                end
             end
+            obj.nuisanceVars = nuisanceVars;
             
             % Done with these big variables
             clear data stimulus stimTime acqGroups

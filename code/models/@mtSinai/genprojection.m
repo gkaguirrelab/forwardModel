@@ -25,6 +25,7 @@ function genprojection(obj)
 dataDeltaT = obj.dataDeltaT;
 dataAcqGroups = obj.dataAcqGroups;
 polyDeg = obj.polyDeg;
+nuisanceVars = obj.nuisanceVars;
 
 nAcqs = max(dataAcqGroups);
 
@@ -57,7 +58,7 @@ end
 % matrix.
 tmatrix = {};
 for pp=1:nAcqs
-    tmatrix{pp} = cat(2,polyregressors{pp});
+    tmatrix{pp} = cat(2,polyregressors{pp},nuisanceVars{pp});
 end
 % Then, separate them using blkdiag
 temp = blkdiag(tmatrix{:});

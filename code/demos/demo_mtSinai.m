@@ -72,19 +72,25 @@ stimulus = [stimulus, {stimMat} ];
 % task.
 eventAmplitudes = [0 0.25:.25:1.5 2];
 
+% Create some nuisance variables that are random noise
+nuisanceVars{1} = rand(1,420); nuisanceVars{2} = rand(1,420);
+nuisanceVars{1} = nuisanceVars{1} - mean(nuisanceVars{1});
+nuisanceVars{2} = nuisanceVars{2} - mean(nuisanceVars{2});
+
 % Define the modelOpts for the model
 stimLabels = {'baseline','stimA','stimB','stimC','stimD','stimE','stimF','attention'};
 confoundStimLabel = 'attention';
 avgAcqIdx = {[1:420],[421:840]};
-modelOpts = {'stimLabels',stimLabels,'confoundStimLabel',confoundStimLabel,'avgAcqIdx',avgAcqIdx};
+modelOpts = {'stimLabels',stimLabels,...
+    'confoundStimLabel',confoundStimLabel,...
+    'avgAcqIdx',avgAcqIdx,...
+    'nuisanceVars',nuisanceVars};
 
 % Instantiate the model. Need to include some "dummy data".
 tr = 0.8;
 dummyData = {attentionVector,attentionVector};
 model = mtSinai(dummyData,stimulus,tr,...
-    'stimLabels',stimLabels,...
-    'confoundStimLabel',confoundStimLabel,...
-    'avgAcqIdx',avgAcqIdx);
+    modelOpts{:});
 
 % Create simulated data with varying amplitudes of the events, and add some
 % noise
