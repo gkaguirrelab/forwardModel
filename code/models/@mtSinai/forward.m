@@ -44,7 +44,7 @@ if ~isempty(stimTime)
 end
 
 % Apply the cleaning step
-fit = obj.clean(fit);
+%fit = obj.clean(fit);
 
 end
 

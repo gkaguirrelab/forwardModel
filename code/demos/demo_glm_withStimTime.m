@@ -43,7 +43,7 @@ model = glm(dummyData, stimulus, tr, 'stimTime', stimTime);
 x = model.initial;
 x(1:14) = rand(14,1)*200+100;
 datats = model.forward(x);
-datats = datats + randn(size(datats))*range(datats)/5;
+datats = datats + randn(size(datats))*(max(datats)-min(datats))/5;
 
 % Package the simulated time-series vector as a data input to the model
 data = [];

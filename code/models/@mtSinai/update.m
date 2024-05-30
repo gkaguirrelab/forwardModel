@@ -68,9 +68,6 @@ for ss = 1:size(stimulus,2)
         fit = fit - mean(fit);
     end
     
-    % Apply the cleaning step
-    fit = obj.clean(fit);
-    
     % Add the vector to the design matrix
     X(:,ss) = fit;
     

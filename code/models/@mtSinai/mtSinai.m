@@ -286,6 +286,8 @@ classdef mtSinai < handle
                     % later construction of the projection matrix
                     nuisanceVars{ii} = nuisanceVars{ii}';
                 end
+            else
+                nuisanceVars = repmat({[]},1,length(data));
             end
             obj.nuisanceVars = nuisanceVars;
             

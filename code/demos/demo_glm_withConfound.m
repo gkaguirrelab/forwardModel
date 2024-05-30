@@ -40,7 +40,7 @@ for aa = 1:4
     idxA = aa-1;
     idxB = 4-aa;
     stimulus{aa} = [ zeros(idxA*15,420*(idxA~=0)); stimMatrix; zeros(idxB*15,420*(idxB~=0))  ];
-    data{aa}(1,:) = datats + randn(size(datats))*range(datats)/2;
+    data{aa}(1,:) = datats + randn(size(datats))*(max(datats)-min(datats))/2;
 end
 
 % Create the stimLabels

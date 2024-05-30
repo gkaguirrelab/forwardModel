@@ -22,7 +22,7 @@ function f = zeromean(m,dim)
 
 % do it
 if ~exist('dim','var') || isempty(dim)
-  f = m - nanmean(m(:));
+  f = m - mean(m(:),"omitnan");
 else
-  f = bsxfun(@minus,m,nanmean(m,dim));
+  f = bsxfun(@minus,m,mean(m,dim,"omitnan"));
 end

@@ -33,7 +33,7 @@ model = glm(dummyData,stimulus,tr);
 x = model.initial;
 x(1:14) = rand(14,1)*200+100;
 datats = model.forward(x);
-datats = datats + randn(size(datats))*range(datats)/5;
+datats = datats + randn(size(datats))*(max(datats)-min(datats))/5;
 data = [];
 data{1}(1,:) = datats;
 
