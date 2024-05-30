@@ -35,7 +35,7 @@ set(fig1,'PaperUnits','normalized');
 set(gcf,'Units','points','Position',[500 500 750 500]);
 
 % Pick the voxel with the best model fit
-[~,vx]=nanmax(results.R2(vxs));
+[~,vx]=max(results.R2(vxs),[],"omitnan");
 
 % Grab the time series
 datats = data(vx,:)';
@@ -74,7 +74,7 @@ xlabel('Time [seconds]');
 title('HRF');
 
 % Now pick the voxel with the median model fit
-medianR2 = nanmedian(results.R2(vxs));
+medianR2 = median(results.R2(vxs),"omitnan");
 
 % Find the vertex that has an R^2 closest to the median
 [~,vx] = min( abs(results.R2(vxs) - medianR2));

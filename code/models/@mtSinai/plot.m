@@ -34,7 +34,7 @@ set(fig1,'PaperUnits','normalized');
 set(gcf,'Units','points','Position',[500 500 1500 300]);
 
 % Pick the voxel with the best model fit
-[~,vx]=nanmax(results.R2(vxs));
+[~,vx]=max(results.R2(vxs),[],"omitnan");
 
 % Grab the time series
 datats = data(vx,:)';

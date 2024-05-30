@@ -40,7 +40,7 @@ for pp = 1:nParams-3
     results.meta.mapField{pp} = stimLabels{pp};
     results.meta.mapScale{pp} = 'blueRed';
     results.meta.mapLabel{pp} = stimLabels{pp};
-    results.meta.mapBounds{pp} = [nanmin(params(:,pp)) nanmax(params(:,pp))];
+    results.meta.mapBounds{pp} = [min(params(:,pp),[],"omitnan") max(params(:,pp),[],"omitnan")];
     results.(stimLabels{pp}) = params(:,pp);
 end
 
