@@ -94,7 +94,7 @@ if wantgainsensitive
   % case where x is the bigger vector
   temp = xnorm .* bsxfun(@(x,y) zerodiv(x,y,NaN,0),y,xlen);
   bad = all(isnan(temp),dim);
-  f1 = nansum(temp,dim);
+  f1 = sum(temp,dim,"omitnan");
   f1(bad) = NaN;
 
   % case where y is the bigger vector
