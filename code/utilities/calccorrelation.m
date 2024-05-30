@@ -100,7 +100,7 @@ if wantgainsensitive
   % case where y is the bigger vector
   temp = bsxfun(@(x,y) zerodiv(x,y,NaN,0),x,ylen) .* ynorm;
   bad = all(isnan(temp),dim);
-  f2 = nansum(temp,dim);
+  f2 = sum(temp,dim,"omitnan");
   f2(bad) = NaN;
   
   % figure out which one to use
@@ -112,6 +112,6 @@ else
   temp = xnorm .* ynorm;
     % at this point, we want to sum along dim.  however, if a case has all NaNs, we need the output to be NaN.
   bad = all(isnan(temp),dim);  % record bad cases
-  f = nansum(temp,dim);        % do the summation
+  f = sum(temp,dim,"omitnan");        % do the summation
   f(bad) = NaN;                % explicitly set bad cases to NaN
 end
